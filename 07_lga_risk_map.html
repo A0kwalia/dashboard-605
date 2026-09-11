@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Risk map by local government area</title>
+<style>
+body{margin:0;padding:26px;font-family:Calibri,Segoe UI,system-ui,sans-serif;color:#21252B;background:#fff;max-width:900px}
+h1{font-family:Cambria,Georgia,serif;font-size:21px;margin:0 0 4px}
+.sub{color:#5A5F66;font-size:13.5px;line-height:1.55;margin:0 0 16px;max-width:760px}
+.ctl{margin:2px 0 10px;font-size:13px;color:#5A5F66}
+input[type=range]{width:340px;vertical-align:middle}
+svg{max-width:100%;height:auto;display:block;border:1px solid #EDEAEB;border-radius:6px}
+.cap{font-size:12px;color:#5A5F66;font-style:italic;margin:10px 0 0;max-width:760px;line-height:1.55}
+.src{margin-top:22px;padding-top:12px;border-top:1px solid #DDD7D9;font-size:11.5px;color:#5A5F66}
+.tip{position:fixed;pointer-events:none;background:#21252B;color:#fff;font-size:12px;padding:7px 10px;
+border-radius:5px;opacity:0;transition:opacity .12s;z-index:99;line-height:1.5;max-width:240px}
+</style></head><body>
+<h1>Risk map by local government area</h1>
+<p class="sub">Mean predicted risk per LGA across the 2024 test year. Bubble size is crash volume, colour is predicted risk. Drag the slider to highlight LGAs above a chosen threshold.</p>
+<div class="ctl">Highlight areas with mean predicted risk above <b id="thv"></b>
+&nbsp;&nbsp;<span id="count"></span><br><input type="range" id="slider"></div>
+<svg id="c"></svg>
+<p class="cap">There is no strong coastal-inland or metro-rural gradient. Location features contribute almost nothing to the prediction, so the map communicates risk rather than generating it.</p>
+<div class="src">Source: assignment1_updated.ipynb, Part B &middot; NSW Road Crash Data 2020&ndash;2024, Transport for NSW (CC BY 4.0) &middot; Calibrated histogram gradient boosting, evaluated on the held-out 2024 year &middot; Hover any element for exact values.</div>
+<div class="tip" id="tip"></div>
+<script>var SPEC={"type": "map", "w": 660, "h": 540, "points": [{"l": "Albury", "x": 146.93175, "y": -36.0656475, "v": 0.5991685885045249, "obs": 0.4567901234567901, "n": 162}, {"l": "Armidale Regional", "x": 151.673093, "y": -30.505946, "v": 0.7067410788396877, "obs": 0.782608695652174, "n": 69}, {"l": "Ballina", "x": 153.529761, "y": -28.847446, "v": 0.6789498678104894, "obs": 0.6396396396396397, "n": 111}, {"l": "Bathurst Regional", "x": 149.578649, "y": -33.41859, "v": 0.7011246435752475, "obs": 0.7606837606837606, "n": 117}, {"l": "Bayside", "x": 151.147863, "y": -33.946094, "v": 0.6831377412504983, "obs": 0.7086092715231788, "n": 453}, {"l": "Bega Valley", "x": 149.845142, "y": -36.737863, "v": 0.7063938377841787, "obs": 0.7792207792207793, "n": 77}, {"l": "Blacktown", "x": 150.872594, "y": -33.7562765, "v": 0.6426267719492792, "obs": 0.6603139013452914, "n": 892}, {"l": "Blue Mountains", "x": 150.470094, "y": -33.70858, "v": 0.6944087867078667, "obs": 0.7172413793103448, "n": 145}, {"l": "Burwood", "x": 151.10011350000002, "y": -33.87958, "v": 0.692392455304024, "obs": 0.6413043478260869, "n": 92}, {"l": "Byron", "x": 153.541148, "y": -28.632165, "v": 0.6391178286269822, "obs": 0.6774193548387096, "n": 155}, {"l": "Camden", "x": 150.75266499999998, "y": -34.0270555, "v": 0.6799517532729781, "obs": 0.7087912087912088, "n": 182}, {"l": "Campbelltown", "x": 150.82776, "y": -34.048666499999996, "v": 0.6789552160838703, "obs": 0.6910112359550562, "n": 356}, {"l": "Canada Bay", "x": 151.1069935, "y": -33.8570105, "v": 0.687935422774846, "obs": 0.6986301369863014, "n": 146}, {"l": "Canterbury-Bankstown", "x": 151.036461, "y": -33.919678, "v": 0.6914512715587969, "obs": 0.6822033898305084, "n": 944}, {"l": "Central Coast", "x": 151.398422, "y": -33.378728, "v": 0.6406943738151166, "obs": 0.6472564389697648, "n": 893}, {"l": "Cessnock", "x": 151.375272, "y": -32.826695, "v": 0.7131470677720054, "obs": 0.7403846153846154, "n": 208}, {"l": "Clarence Valley", "x": 152.975031, "y": -29.680239, "v": 0.6940693249359243, "obs": 0.7484276729559748, "n": 159}, {"l": "Coffs Harbour", "x": 153.114531, "y": -30.293446, "v": 0.6596975070276656, "obs": 0.6582914572864321, "n": 199}, {"l": "Cumberland", "x": 150.99188299999997, "y": -33.8399965, "v": 0.6825816423725176, "obs": 0.6986062717770035, "n": 574}, {"l": "Dubbo Regional", "x": 148.618697, "y": -32.252977, "v": 0.6881313440182236, "obs": 0.6526946107784432, "n": 167}, {"l": "Eurobodalla", "x": 150.12818, "y": -35.840630000000004, "v": 0.7192839264303227, "obs": 0.7291666666666666, "n": 96}, {"l": "Fairfield", "x": 150.92311999999998, "y": -33.8720785, "v": 0.6792459306399524, "obs": 0.745136186770428, "n": 514}, {"l": "Georges River", "x": 151.098733, "y": -33.966119, "v": 0.6864628612001886, "obs": 0.7063197026022305, "n": 269}, {"l": "Goulburn Mulwaree", "x": 149.73301149999998, "y": -34.749164, "v": 0.6904234166877213, "obs": 0.6929824561403509, "n": 114}, {"l": "Griffith", "x": 146.04194, "y": -34.28505, "v": 0.6589121297989048, "obs": 0.6764705882352942, "n": 68}, {"l": "Hawkesbury", "x": 150.803471, "y": -33.602005, "v": 0.6775188383856239, "obs": 0.7030567685589519, "n": 229}, {"l": "Hilltops", "x": 148.3850665, "y": -34.355149, "v": 0.7035187620966704, "obs": 0.7368421052631579, "n": 76}, {"l": "Hornsby", "x": 151.099295, "y": -33.702357, "v": 0.6628912446689192, "obs": 0.6797153024911032, "n": 281}, {"l": "Inner West", "x": 151.1585255, "y": -33.8912825, "v": 0.679183748598262, "obs": 0.6509433962264151, "n": 424}, {"l": "Kempsey", "x": 152.83980150000002, "y": -31.060113, "v": 0.6701154711615095, "obs": 0.7567567567567568, "n": 74}, {"l": "Ku-ring-gai", "x": 151.15024499999998, "y": -33.745216, "v": 0.6658418837391618, "obs": 0.6855670103092784, "n": 194}, {"l": "Lake Macquarie", "x": 151.6224775, "y": -32.9877545, "v": 0.6742538393411167, "obs": 0.6610878661087866, "n": 478}, {"l": "Lismore", "x": 153.293051, "y": -28.814492, "v": 0.6904618081976982, "obs": 0.7037037037037037, "n": 108}, {"l": "Lithgow", "x": 150.133834, "y": -33.482758, "v": 0.7427386283403511, "obs": 0.7471264367816092, "n": 87}, {"l": "Liverpool", "x": 150.891593, "y": -33.930246, "v": 0.6698011003680022, "obs": 0.7050847457627119, "n": 590}, {"l": "Maitland", "x": 151.5858915, "y": -32.748352, "v": 0.6875509150281438, "obs": 0.71875, "n": 160}, {"l": "Mid-Coast", "x": 152.446934, "y": -32.017463, "v": 0.6628977150352985, "obs": 0.6757679180887372, "n": 293}, {"l": "Mid-Western Regional", "x": 149.65481, "y": -32.598651, "v": 0.7155945785772133, "obs": 0.776, "n": 125}, {"l": "Newcastle", "x": 151.7213305, "y": -32.908778, "v": 0.6521293156356162, "obs": 0.6283783783783784, "n": 444}, {"l": "North Sydney", "x": 151.211178, "y": -33.830405, "v": 0.7032664913415559, "obs": 0.7043478260869566, "n": 115}, {"l": "Northern Beaches", "x": 151.278787, "y": -33.75319, "v": 0.6842672473796998, "obs": 0.7205542725173211, "n": 433}, {"l": "Orange", "x": 149.100822, "y": -33.283128000000005, "v": 0.6713114540087212, "obs": 0.6086956521739131, "n": 92}, {"l": "Parramatta", "x": 151.021919, "y": -33.804927, "v": 0.6763091739059779, "obs": 0.6786324786324787, "n": 585}, {"l": "Penrith", "x": 150.719876, "y": -33.763053, "v": 0.670831077113894, "obs": 0.7255369928400954, "n": 419}, {"l": "Port Macquarie-Hastings", "x": 152.819869, "y": -31.457432, "v": 0.7163651954555437, "obs": 0.7450980392156863, "n": 153}, {"l": "Port Stephens", "x": 151.855344, "y": -32.7614605, "v": 0.6826298833161127, "obs": 0.6666666666666666, "n": 156}, {"l": "Queanbeyan-Palerang Regional", "x": 149.240912, "y": -35.356324, "v": 0.6305405368931701, "obs": 0.6240601503759399, "n": 133}, {"l": "Randwick", "x": 151.23926, "y": -33.923178, "v": 0.7123230187609871, "obs": 0.7396226415094339, "n": 265}, {"l": "Richmond Valley", "x": 153.08166599999998, "y": -28.874814, "v": 0.7022123315059087, "obs": 0.7297297297297297, "n": 74}, {"l": "Ryde", "x": 151.106676, "y": -33.800959, "v": 0.6896829913488924, "obs": 0.7127272727272728, "n": 275}, {"l": "Shellharbour", "x": 150.8366995, "y": -34.568024, "v": 0.6382263955332672, "obs": 0.7661290322580645, "n": 124}, {"l": "Shoalhaven", "x": 150.599803, "y": -34.946348, "v": 0.6972188042025341, "obs": 0.697594501718213, "n": 291}, {"l": "Singleton", "x": 151.165557, "y": -32.56879, "v": 0.7165726525121734, "obs": 0.7922077922077922, "n": 77}, {"l": "Snowy Monaro Regional", "x": 149.119622, "y": -36.361923, "v": 0.6418742123079604, "obs": 0.6373626373626373, "n": 91}, {"l": "Snowy Valleys", "x": 148.221541, "y": -35.415753, "v": 0.6864535744397698, "obs": 0.6376811594202898, "n": 69}, {"l": "Strathfield", "x": 151.070763, "y": -33.874484, "v": 0.6870846362142689, "obs": 0.706766917293233, "n": 133}, {"l": "Sutherland", "x": 151.084892, "y": -34.0353105, "v": 0.6652194315274051, "obs": 0.6675126903553299, "n": 394}, {"l": "Sydney", "x": 151.206082, "y": -33.882402, "v": 0.7178415325998226, "obs": 0.7597503900156006, "n": 641}, {"l": "Tamworth Regional", "x": 150.918725, "y": -31.0920495, "v": 0.7155310754015305, "obs": 0.675, "n": 160}, {"l": "The Hills", "x": 150.96510999999998, "y": -33.715973, "v": 0.6606583334998826, "obs": 0.6867469879518072, "n": 332}, {"l": "Tweed", "x": 153.526536, "y": -28.250715, "v": 0.6790268594729979, "obs": 0.65234375, "n": 256}, {"l": "Wagga Wagga", "x": 147.36119200000002, "y": -35.12652, "v": 0.6165937343684411, "obs": 0.6263736263736264, "n": 182}, {"l": "Waverley", "x": 151.264633, "y": -33.8922755, "v": 0.72194512209721, "obs": 0.7542372881355932, "n": 118}, {"l": "Willoughby", "x": 151.189258, "y": -33.802345, "v": 0.7075801938075209, "obs": 0.7153284671532847, "n": 137}, {"l": "Wingecarribee", "x": 150.39691499999998, "y": -34.5071565, "v": 0.6651142210989754, "obs": 0.7028985507246377, "n": 138}, {"l": "Wollondilly", "x": 150.611367, "y": -34.205244, "v": 0.7306561187129531, "obs": 0.6666666666666666, "n": 117}, {"l": "Wollongong", "x": 150.882344, "y": -34.423619, "v": 0.6544952667880105, "obs": 0.6739606126914661, "n": 457}, {"l": "Woollahra", "x": 151.244607, "y": -33.879071, "v": 0.7184439102778273, "obs": 0.6194690265486725, "n": 113}, {"l": "Yass Valley", "x": 148.92552, "y": -34.837192, "v": 0.5963184788300091, "obs": 0.5392156862745098, "n": 102}], "thresh": 0.692222398225883};</script>
+<script>
+(function(){
+"use strict";
+var S = SPEC, C = {maroon:"#8C1D40",asphalt:"#21252B",amber:"#E39A2C",teal:"#2F6F6B",
+  slate:"#5A5F66",grey:"#B9AFB3",line:"#DDD7D9",faint:"#EDEAEB"};
+var NS="http://www.w3.org/2000/svg";
+function el(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+var tip=document.getElementById("tip");
+function show(ev,h){tip.innerHTML=h;tip.style.opacity=1;
+  var x=ev.clientX+14,y=ev.clientY+14;
+  if(x+250>window.innerWidth)x=ev.clientX-240;
+  if(y+90>window.innerHeight)y=ev.clientY-80;
+  tip.style.left=x+"px";tip.style.top=y+"px";}
+function hide(){tip.style.opacity=0;}
+function hov(n,h){n.style.cursor="pointer";
+  n.addEventListener("mousemove",function(e){show(e,h);});
+  n.addEventListener("mouseleave",hide);}
+var svg=document.getElementById("c");
+var W=S.w||640, H=S.h||400;
+svg.setAttribute("viewBox","0 0 "+W+" "+H);
+function axes(L,R,T,B,xd,yd,xl,yl,xfmt,yfmt){
+  for(var g=0;g<=4;g++){
+    var yy=T+(B-T)*g/4;
+    svg.appendChild(el("line",{x1:L,y1:yy,x2:R,y2:yy,stroke:C.faint}));
+    var v=yd[0]+(yd[1]-yd[0])*(1-g/4);
+    var t=el("text",{x:L-8,y:yy+4,"text-anchor":"end","font-size":10.5,fill:C.slate});
+    t.textContent=yfmt?yfmt(v):v.toFixed(2); svg.appendChild(t);
+  }
+  for(var k=0;k<=5;k++){
+    var xx=L+(R-L)*k/5, xv=xd[0]+(xd[1]-xd[0])*k/5;
+    var s=el("text",{x:xx,y:B+17,"text-anchor":"middle","font-size":10.5,fill:C.slate});
+    s.textContent=xfmt?xfmt(xv):xv.toFixed(1); svg.appendChild(s);
+  }
+  svg.appendChild(el("line",{x1:L,y1:B,x2:R,y2:B,stroke:C.line}));
+  svg.appendChild(el("line",{x1:L,y1:T,x2:L,y2:B,stroke:C.line}));
+  if(xl){var a=el("text",{x:(L+R)/2,y:H-7,"text-anchor":"middle","font-size":11.5,fill:C.asphalt});
+    a.textContent=xl; svg.appendChild(a);}
+  if(yl){var b=el("text",{x:15,y:(T+B)/2,"text-anchor":"middle","font-size":11.5,fill:C.asphalt,
+    transform:"rotate(-90 15 "+((T+B)/2)+")"}); b.textContent=yl; svg.appendChild(b);}
+}
+function legend(items,x,y){
+  items.forEach(function(it,i){
+    var yy=y+i*16;
+    if(it.dash!==undefined)
+      svg.appendChild(el("line",{x1:x,y1:yy,x2:x+20,y2:yy,stroke:it.color,"stroke-width":2.4,
+        "stroke-dasharray":it.dash||"none"}));
+    else svg.appendChild(el("rect",{x:x,y:yy-5,width:11,height:11,fill:it.color,rx:2}));
+    var t=el("text",{x:x+(it.dash!==undefined?25:16),y:yy+4,"font-size":10.5,fill:C.slate});
+    t.textContent=it.label; svg.appendChild(t);
+  });
+}
+
+/* ---- LINE ---- */
+if(S.type==="line"){
+  var L=58,R=W-16,T=18,B=H-46;
+  var xd=S.xdom||[0,1], yd=S.ydom||[0,1];
+  function X(v){return L+(v-xd[0])/(xd[1]-xd[0])*(R-L);}
+  function Y(v){return B-(v-yd[0])/(yd[1]-yd[0])*(B-T);}
+  axes(L,R,T,B,xd,yd,S.xlabel,S.ylabel,S.xfmt?eval(S.xfmt):null,S.yfmt?eval(S.yfmt):null);
+  S.series.forEach(function(s){
+    var d=s.pts.map(function(p,i){return (i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1);}).join(" ");
+    svg.appendChild(el("path",{d:d,fill:"none",stroke:s.color,"stroke-width":s.w||2.3,
+      "stroke-dasharray":s.dash||"none"}));
+  });
+  legend(S.series.filter(function(s){return s.label;}).map(function(s){
+    return {label:s.label,color:s.color,dash:s.dash||""};}), S.legx||(R-150), S.legy||(T+12));
+  var m=S.series[0];
+  var dot=el("circle",{r:4.5,fill:m.color,opacity:0});
+  var hit=el("rect",{x:L,y:T,width:R-L,height:B-T,fill:"transparent"});
+  svg.appendChild(hit); svg.appendChild(dot);
+  hit.addEventListener("mousemove",function(ev){
+    var bb=svg.getBoundingClientRect();
+    var fx=xd[0]+((ev.clientX-bb.left)/bb.width*W-L)/(R-L)*(xd[1]-xd[0]);
+    var best=m.pts[0],bd=1e9;
+    m.pts.forEach(function(p){var d=Math.abs(p[0]-fx); if(d<bd){bd=d;best=p;}});
+    dot.setAttribute("cx",X(best[0]));dot.setAttribute("cy",Y(best[1]));dot.setAttribute("opacity",1);
+    show(ev,"<b>"+(S.xlabel||"x")+"</b> "+best[0].toFixed(3)+"<br><b>"+(S.ylabel||"y")+"</b> "+best[1].toFixed(3));
+  });
+  hit.addEventListener("mouseleave",function(){dot.setAttribute("opacity",0);hide();});
+}
+
+/* ---- BAR (vertical, optional paired) ---- */
+if(S.type==="bar"){
+  var L=58,R=W-16,T=22,B=H-(S.bottom||52);
+  var max=S.max||Math.max.apply(null,S.items.map(function(d){
+    return Math.max(d.v,d.v2===undefined?0:d.v2);}))*1.15;
+  function Y2(v){return B-v/max*(B-T);}
+  for(var g=0;g<=4;g++){
+    var yy=T+(B-T)*g/4;
+    svg.appendChild(el("line",{x1:L,y1:yy,x2:R,y2:yy,stroke:C.faint}));
+    var t=el("text",{x:L-8,y:yy+4,"text-anchor":"end","font-size":10.5,fill:C.slate});
+    t.textContent=(max*(1-g/4)).toFixed(2); svg.appendChild(t);
+  }
+  svg.appendChild(el("line",{x1:L,y1:B,x2:R,y2:B,stroke:C.line}));
+  var n=S.items.length, step=(R-L)/n, paired=S.items.some(function(d){return d.v2!==undefined;});
+  S.items.forEach(function(d,i){
+    var bw=paired?step*0.30:step*0.54, cx=L+step*(i+0.5);
+    var r1=el("rect",{x:paired?cx-bw-3:cx-bw/2,y:Y2(d.v),width:bw,height:B-Y2(d.v),
+      fill:d.color||C.maroon,rx:2});
+    svg.appendChild(r1); hov(r1,"<b>"+d.l+"</b><br>"+(S.lab1||"Value")+" "+d.v.toFixed(3)+
+      (d.note?"<br>"+d.note:""));
+    if(paired){
+      var r2=el("rect",{x:cx+3,y:Y2(d.v2),width:bw,height:B-Y2(d.v2),fill:C.grey,rx:2});
+      svg.appendChild(r2); hov(r2,"<b>"+d.l+"</b><br>"+(S.lab2||"Value")+" "+d.v2.toFixed(3)+
+        (d.note?"<br>"+d.note:""));
+    }
+    var lt=el("text",{x:cx,y:B+16,"text-anchor":"middle","font-size":10.5,fill:C.slate});
+    lt.textContent=d.l; svg.appendChild(lt);
+    if(d.l2){var l2=el("text",{x:cx,y:B+29,"text-anchor":"middle","font-size":9.5,fill:C.slate});
+      l2.textContent=d.l2; svg.appendChild(l2);}
+  });
+  if(S.ref!==undefined){
+    var ry=Y2(S.ref);
+    svg.appendChild(el("line",{x1:L,y1:ry,x2:R,y2:ry,stroke:C.amber,"stroke-width":1.9,
+      "stroke-dasharray":"5 3"}));
+    var rt=el("text",{x:R-4,y:ry-6,"text-anchor":"end","font-size":10.5,fill:"#8A5A11"});
+    rt.textContent=S.refLabel||""; svg.appendChild(rt);
+  }
+  if(paired) legend([{label:S.lab1,color:C.maroon},{label:S.lab2,color:C.grey}],L+10,T+6);
+  if(S.ylabel){var yb=el("text",{x:15,y:(T+B)/2,"text-anchor":"middle","font-size":11.5,
+    fill:C.asphalt,transform:"rotate(-90 15 "+((T+B)/2)+")"});
+    yb.textContent=S.ylabel; svg.appendChild(yb);}
+}
+
+/* ---- HBAR ---- */
+if(S.type==="hbar"){
+  var L=S.left||190,R=W-64,T=16,B=H-36;
+  var max=S.max||Math.max.apply(null,S.items.map(function(d){return d.v;}))*1.15;
+  var min=S.min||0;
+  function X3(v){return L+(v-min)/(max-min)*(R-L);}
+  var step=(B-T)/S.items.length;
+  S.items.forEach(function(d,i){
+    var y=T+step*i+step*0.16, h=Math.max(6,step*0.68);
+    var r=el("rect",{x:L,y:y,width:Math.max(1,X3(d.v)-L),height:h,fill:d.color||C.maroon,rx:2});
+    svg.appendChild(r); hov(r,"<b>"+d.l+"</b><br>"+(S.lab1||"Value")+" "+d.v.toFixed(4)+
+      (d.note?"<br>"+d.note:""));
+    var t=el("text",{x:L-9,y:y+h/2+4,"text-anchor":"end","font-size":11,fill:C.slate});
+    t.textContent=d.l.length>28?d.l.slice(0,27)+"\u2026":d.l; svg.appendChild(t);
+    var v=el("text",{x:X3(d.v)+6,y:y+h/2+4,"font-size":10.5,fill:C.asphalt});
+    v.textContent=S.vfmt==="4"?d.v.toFixed(4):d.v.toFixed(3); svg.appendChild(v);
+  });
+  if(S.ref!==undefined){
+    var rx=X3(S.ref);
+    svg.appendChild(el("line",{x1:rx,y1:T,x2:rx,y2:B,stroke:C.amber,"stroke-width":1.9,
+      "stroke-dasharray":"5 3"}));
+    var rt2=el("text",{x:rx+5,y:T+11,"font-size":10.5,fill:"#8A5A11"});
+    rt2.textContent=S.refLabel||""; svg.appendChild(rt2);
+  }
+  svg.appendChild(el("line",{x1:L,y1:B,x2:R,y2:B,stroke:C.line}));
+  if(S.xlabel){var xb=el("text",{x:(L+R)/2,y:H-6,"text-anchor":"middle","font-size":11.5,fill:C.asphalt});
+    xb.textContent=S.xlabel; svg.appendChild(xb);}
+}
+
+/* ---- HIST ---- */
+if(S.type==="hist"){
+  var L=60,R=W-16,T=20,B=H-48;
+  var max=Math.max.apply(null,S.bins.map(function(d){return Math.max(d[1],d[2]);}))*1.1;
+  var xs=S.bins.map(function(d){return d[0];});
+  var x0=Math.min.apply(null,xs), x1=Math.max.apply(null,xs);
+  function X4(v){return L+(v-x0)/(x1-x0)*(R-L);}
+  function Y4(v){return B-v/max*(B-T);}
+  for(var g=0;g<=4;g++){
+    var yy=T+(B-T)*g/4;
+    svg.appendChild(el("line",{x1:L,y1:yy,x2:R,y2:yy,stroke:C.faint}));
+    var t=el("text",{x:L-8,y:yy+4,"text-anchor":"end","font-size":10.5,fill:C.slate});
+    t.textContent=Math.round(max*(1-g/4)); svg.appendChild(t);
+  }
+  var bw=(R-L)/S.bins.length;
+  S.bins.forEach(function(d){
+    var x=X4(d[0])-bw/2;
+    var a=el("rect",{x:x,y:Y4(d[1]),width:Math.max(1,bw-0.7),height:B-Y4(d[1]),fill:C.grey,opacity:0.9});
+    var b=el("rect",{x:x,y:Y4(d[2]),width:Math.max(1,bw-0.7),height:B-Y4(d[2]),fill:C.maroon,opacity:0.62});
+    svg.appendChild(a); svg.appendChild(b);
+    hov(b,"<b>Predicted \u2248 "+d[0].toFixed(2)+"</b><br>"+S.lab2+": "+d[2]+"<br>"+S.lab1+": "+d[1]);
+  });
+  if(S.vline!==undefined){
+    var vx=X4(S.vline);
+    svg.appendChild(el("line",{x1:vx,y1:T,x2:vx,y2:B,stroke:C.amber,"stroke-width":2,"stroke-dasharray":"5 3"}));
+    var vt=el("text",{x:vx+5,y:T+12,"font-size":10.5,fill:"#8A5A11"});
+    vt.textContent=S.vlabel||""; svg.appendChild(vt);
+  }
+  svg.appendChild(el("line",{x1:L,y1:B,x2:R,y2:B,stroke:C.line}));
+  for(var k=0;k<=5;k++){
+    var xv=x0+(x1-x0)*k/5;
+    var s=el("text",{x:X4(xv),y:B+17,"text-anchor":"middle","font-size":10.5,fill:C.slate});
+    s.textContent=xv.toFixed(2); svg.appendChild(s);
+  }
+  var xa=el("text",{x:(L+R)/2,y:H-7,"text-anchor":"middle","font-size":11.5,fill:C.asphalt});
+  xa.textContent=S.xlabel||""; svg.appendChild(xa);
+  legend([{label:S.lab2,color:C.maroon},{label:S.lab1,color:C.grey}],L+10,T+8);
+}
+
+/* ---- MAP / BUBBLE ---- */
+if(S.type==="map"){
+  var L=48,R=W-48,T=20,B=H-36;
+  var xs=S.points.map(function(d){return d.x;}), ys=S.points.map(function(d){return d.y;});
+  var x0=Math.min.apply(null,xs),x1=Math.max.apply(null,xs);
+  var y0=Math.min.apply(null,ys),y1=Math.max.apply(null,ys);
+  function PX(v){return L+(v-x0)/(x1-x0)*(R-L);}
+  function PY(v){return B-(v-y0)/(y1-y0)*(B-T);}
+  var vs=S.points.map(function(d){return d.v;});
+  var v0=Math.min.apply(null,vs),v1=Math.max.apply(null,vs);
+  function col(v){
+    var t=(v-v0)/(v1-v0||1);
+    var st=[[69,117,180],[145,191,219],[255,255,191],[253,174,97],[215,48,39]];
+    var f=t*(st.length-1),i=Math.min(st.length-2,Math.floor(f)),k=f-i,a=st[i],b=st[i+1];
+    return "rgb("+Math.round(a[0]+(b[0]-a[0])*k)+","+Math.round(a[1]+(b[1]-a[1])*k)+","+
+      Math.round(a[2]+(b[2]-a[2])*k)+")";
+  }
+  var layer=el("g",{}); svg.appendChild(layer);
+  function render(th){
+    while(layer.firstChild)layer.removeChild(layer.firstChild);
+    var above=0;
+    S.points.slice().sort(function(a,b){return b.n-a.n;}).forEach(function(d){
+      var rad=Math.max(4,Math.min(22,Math.sqrt(d.n)/2.3));
+      var on=d.v>=th; if(on)above++;
+      var c=el("circle",{cx:PX(d.x),cy:PY(d.y),r:rad,fill:col(d.v),
+        stroke:on?C.asphalt:"#fff","stroke-width":on?2:1,opacity:on?0.95:0.32});
+      layer.appendChild(c);
+      hov(c,"<b>"+d.l+"</b><br>Predicted "+d.v.toFixed(3)+
+        (d.obs!==undefined?"<br>Observed "+d.obs.toFixed(3):"")+"<br>"+d.n+" crashes");
+    });
+    var cnt=document.getElementById("count");
+    if(cnt)cnt.innerHTML="<b>"+above+"</b> of "+S.points.length+" above threshold";
+  }
+  var sl=document.getElementById("slider");
+  if(sl){
+    sl.min=v0.toFixed(3); sl.max=v1.toFixed(3); sl.step=0.002;
+    sl.value=(S.thresh!==undefined?S.thresh:(v0+v1)/2).toFixed(3);
+    document.getElementById("thv").textContent=(+sl.value).toFixed(3);
+    sl.addEventListener("input",function(){
+      document.getElementById("thv").textContent=(+sl.value).toFixed(3);
+      render(+sl.value);});
+    render(+sl.value);
+  } else render(-1);
+}
+})();
+</script>
+</body></html>

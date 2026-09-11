@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Review predictions</title>
+<style>
+body{margin:0;padding:26px;font-family:Calibri,Segoe UI,system-ui,sans-serif;color:#21252B;background:#fff;max-width:900px}
+h1{font-family:Cambria,Georgia,serif;font-size:21px;margin:0 0 4px}
+.sub{color:#5A5F66;font-size:13.5px;line-height:1.55;margin:0 0 18px;max-width:760px}
+.tally{
+  display:flex;gap:18px;margin:0 0 16px;padding:12px 16px;
+  background:#F6F4F3;border:1px solid #EDEAEB;border-radius:6px;
+  font-size:13px;color:#5A5F66;max-width:760px;
+}
+.tally b{color:#21252B;font-size:15px;display:block;font-weight:600;}
+.tally .stat{flex:1;}
+.tally .accepted b{color:#2F6F6B;}
+.tally .rejected b{color:#8C1D40;}
+
+table{border-collapse:collapse;width:100%;max-width:760px;font-size:13px;}
+thead th{
+  text-align:left;font-size:11.5px;color:#5A5F66;font-weight:600;
+  text-transform:none;border-bottom:1px solid #DDD7D9;padding:6px 10px 8px 0;
+}
+tbody td{border-bottom:1px solid #EDEAEB;padding:9px 10px 9px 0;vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+.lga{font-weight:600;color:#21252B;}
+.note{color:#5A5F66;font-size:11.5px;margin-top:1px;}
+.risk{font-variant-numeric:tabular-nums;color:#21252B;}
+
+.btnrow{display:flex;gap:6px;white-space:nowrap;}
+.btn{
+  border:1px solid #DDD7D9;background:#fff;color:#5A5F66;
+  font-size:12px;padding:5px 11px;border-radius:4px;cursor:pointer;
+  font-family:inherit;
+}
+.btn:hover{background:#F6F4F3;}
+.btn.accept.on{background:#2F6F6B;border-color:#2F6F6B;color:#fff;}
+.btn.reject.on{background:#8C1D40;border-color:#8C1D40;color:#fff;}
+
+.status{font-size:11.5px;color:#B9AFB3;min-width:64px;display:inline-block;}
+.status.accepted{color:#2F6F6B;}
+.status.rejected{color:#8C1D40;}
+
+.foot-note{
+  margin-top:16px;font-size:12px;color:#5A5F66;font-style:italic;
+  max-width:760px;line-height:1.55;
+}
+.src{margin-top:22px;padding-top:12px;border-top:1px solid #DDD7D9;font-size:11.5px;color:#5A5F66;}
+</style>
+</head>
+<body>
+
+<h1>Review predictions</h1>
+<p class="sub">Stands in for the User Feedback step in the system architecture: a planner accepts or rejects the model's call on each of the fifteen highest predicted-risk council areas, so disagreement is visible before a shortlist is acted on. This preview does not save your choices between visits.</p>
+
+<div class="tally">
+  <div class="stat">Reviewed<br><b id="tReviewed">0</b> of 15</div>
+  <div class="stat accepted">Accepted<br><b id="tAccepted">0</b></div>
+  <div class="stat rejected">Rejected<br><b id="tRejected">0</b></div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Council area</th>
+      <th>Predicted risk</th>
+      <th></th>
+      <th>Your call</th>
+    </tr>
+  </thead>
+  <tbody id="rows"></tbody>
+</table>
+
+<p class="foot-note">Accept confirms the model's ranking for that area; reject flags it for a planner to check manually. Nothing here is submitted anywhere &mdash; it is a client-side demonstration of the interaction only.</p>
+<div class="src">Source: assignment1_updated.ipynb, Part B &middot; NSW Road Crash Data 2020&ndash;2024, Transport for NSW (CC BY 4.0) &middot; predicted-risk figures as in "Highest predicted-risk LGAs"</div>
+
+<script>
+var ITEMS = [
+  {l:"Port Stephens", v:0.6826, note:"observed 0.667 \u00b7 156 crashes \u00b7 gap +0.016"},
+  {l:"Bayside", v:0.6831, note:"observed 0.709 \u00b7 453 crashes \u00b7 gap -0.025"},
+  {l:"Northern Beaches", v:0.6843, note:"observed 0.721 \u00b7 433 crashes \u00b7 gap -0.036"},
+  {l:"Georges River", v:0.6865, note:"observed 0.706 \u00b7 269 crashes \u00b7 gap -0.020"},
+  {l:"Maitland", v:0.6876, note:"observed 0.719 \u00b7 160 crashes \u00b7 gap -0.031"},
+  {l:"Dubbo Regional", v:0.6881, note:"observed 0.653 \u00b7 167 crashes \u00b7 gap +0.035"},
+  {l:"Ryde", v:0.6897, note:"observed 0.713 \u00b7 275 crashes \u00b7 gap -0.023"},
+  {l:"Canterbury-Bankstown", v:0.6915, note:"observed 0.682 \u00b7 944 crashes \u00b7 gap +0.009"},
+  {l:"Clarence Valley", v:0.6941, note:"observed 0.748 \u00b7 159 crashes \u00b7 gap -0.054"},
+  {l:"Shoalhaven", v:0.6972, note:"observed 0.698 \u00b7 291 crashes \u00b7 gap -0.000"},
+  {l:"Randwick", v:0.7123, note:"observed 0.740 \u00b7 265 crashes \u00b7 gap -0.027"},
+  {l:"Cessnock", v:0.7131, note:"observed 0.740 \u00b7 208 crashes \u00b7 gap -0.027"},
+  {l:"Tamworth Regional", v:0.7155, note:"observed 0.675 \u00b7 160 crashes \u00b7 gap +0.041"},
+  {l:"Port Macquarie-Hastings", v:0.7164, note:"observed 0.745 \u00b7 153 crashes \u00b7 gap -0.029"},
+  {l:"Sydney", v:0.7178, note:"observed 0.760 \u00b7 641 crashes \u00b7 gap -0.042"}
+];
+
+var state = {}; // index -> "accepted" | "rejected"
+
+function render(){
+  var tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
+  ITEMS.forEach(function(item, i){
+    var tr = document.createElement("tr");
+
+    var tdName = document.createElement("td");
+    tdName.innerHTML = '<span class="lga">' + item.l + '</span><div class="note">' + item.note + '</div>';
+    tr.appendChild(tdName);
+
+    var tdRisk = document.createElement("td");
+    tdRisk.className = "risk";
+    tdRisk.textContent = item.v.toFixed(3);
+    tr.appendChild(tdRisk);
+
+    var tdBtns = document.createElement("td");
+    var wrap = document.createElement("div");
+    wrap.className = "btnrow";
+
+    var acceptBtn = document.createElement("button");
+    acceptBtn.className = "btn accept" + (state[i] === "accepted" ? " on" : "");
+    acceptBtn.textContent = "Accept";
+    acceptBtn.onclick = function(){
+      state[i] = state[i] === "accepted" ? undefined : "accepted";
+      render();
+    };
+
+    var rejectBtn = document.createElement("button");
+    rejectBtn.className = "btn reject" + (state[i] === "rejected" ? " on" : "");
+    rejectBtn.textContent = "Reject";
+    rejectBtn.onclick = function(){
+      state[i] = state[i] === "rejected" ? undefined : "rejected";
+      render();
+    };
+
+    wrap.appendChild(acceptBtn);
+    wrap.appendChild(rejectBtn);
+    tdBtns.appendChild(wrap);
+    tr.appendChild(tdBtns);
+
+    var tdStatus = document.createElement("td");
+    var s = state[i];
+    var statusEl = document.createElement("span");
+    statusEl.className = "status" + (s ? " " + s : "");
+    statusEl.textContent = s === "accepted" ? "Accepted" : s === "rejected" ? "Rejected" : "Pending";
+    tdStatus.appendChild(statusEl);
+    tr.appendChild(tdStatus);
+
+    tbody.appendChild(tr);
+  });
+
+  var accepted = 0, rejected = 0;
+  Object.keys(state).forEach(function(k){
+    if(state[k] === "accepted") accepted++;
+    if(state[k] === "rejected") rejected++;
+  });
+  document.getElementById("tAccepted").textContent = accepted;
+  document.getElementById("tRejected").textContent = rejected;
+  document.getElementById("tReviewed").textContent = accepted + rejected;
+}
+
+render();
+</script>
+
+</body>
+</html>

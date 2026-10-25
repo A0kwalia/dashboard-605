@@ -53,7 +53,7 @@ tbody tr:last-child td{border-bottom:none;}
 <body>
 
 <h1>Review predictions</h1>
-<p class="sub">Stands in for the User Feedback step in the system architecture: a planner accepts or rejects the model's call on each of the fifteen highest predicted-risk council areas, so disagreement is visible before a shortlist is acted on. This preview does not save your choices between visits.</p>
+<p class="sub">Stands in for the User Feedback step in the system architecture: a planner accepts or rejects the model's call on each of the fifteen highest predicted KSI-risk council areas, so disagreement is visible before a shortlist is acted on. This preview does not save your choices between visits.</p>
 
 <div class="tally">
   <div class="stat">Reviewed<br><b id="tReviewed">0</b> of 15</div>
@@ -65,7 +65,7 @@ tbody tr:last-child td{border-bottom:none;}
   <thead>
     <tr>
       <th>Council area</th>
-      <th>Predicted risk</th>
+      <th>Predicted KSI risk</th>
       <th></th>
       <th>Your call</th>
     </tr>
@@ -74,25 +74,25 @@ tbody tr:last-child td{border-bottom:none;}
 </table>
 
 <p class="foot-note">Accept confirms the model's ranking for that area; reject flags it for a planner to check manually. Nothing here is submitted anywhere &mdash; it is a client-side demonstration of the interaction only.</p>
-<div class="src">Source: assignment1_updated.ipynb, Part B &middot; NSW Road Crash Data 2020&ndash;2024, Transport for NSW (CC BY 4.0) &middot; predicted-risk figures as in "Highest predicted-risk LGAs"</div>
+<div class="src">Source: KSI model, held-out 2024 year &middot; NSW Road Crash Data 2020&ndash;2024, Transport for NSW (CC BY 4.0) &middot; predicted-risk figures as in "Highest predicted-risk LGAs"</div>
 
 <script>
 var ITEMS = [
-  {l:"Port Stephens", v:0.6826, note:"observed 0.667 \u00b7 156 crashes \u00b7 gap +0.016"},
-  {l:"Bayside", v:0.6831, note:"observed 0.709 \u00b7 453 crashes \u00b7 gap -0.025"},
-  {l:"Northern Beaches", v:0.6843, note:"observed 0.721 \u00b7 433 crashes \u00b7 gap -0.036"},
-  {l:"Georges River", v:0.6865, note:"observed 0.706 \u00b7 269 crashes \u00b7 gap -0.020"},
-  {l:"Maitland", v:0.6876, note:"observed 0.719 \u00b7 160 crashes \u00b7 gap -0.031"},
-  {l:"Dubbo Regional", v:0.6881, note:"observed 0.653 \u00b7 167 crashes \u00b7 gap +0.035"},
-  {l:"Ryde", v:0.6897, note:"observed 0.713 \u00b7 275 crashes \u00b7 gap -0.023"},
-  {l:"Canterbury-Bankstown", v:0.6915, note:"observed 0.682 \u00b7 944 crashes \u00b7 gap +0.009"},
-  {l:"Clarence Valley", v:0.6941, note:"observed 0.748 \u00b7 159 crashes \u00b7 gap -0.054"},
-  {l:"Shoalhaven", v:0.6972, note:"observed 0.698 \u00b7 291 crashes \u00b7 gap -0.000"},
-  {l:"Randwick", v:0.7123, note:"observed 0.740 \u00b7 265 crashes \u00b7 gap -0.027"},
-  {l:"Cessnock", v:0.7131, note:"observed 0.740 \u00b7 208 crashes \u00b7 gap -0.027"},
-  {l:"Tamworth Regional", v:0.7155, note:"observed 0.675 \u00b7 160 crashes \u00b7 gap +0.041"},
-  {l:"Port Macquarie-Hastings", v:0.7164, note:"observed 0.745 \u00b7 153 crashes \u00b7 gap -0.029"},
-  {l:"Sydney", v:0.7178, note:"observed 0.760 \u00b7 641 crashes \u00b7 gap -0.042"}
+  {l:"Maitland", v:0.2313, note:"observed 0.256 \u00b7 160 crashes \u00b7 gap -0.025"},
+  {l:"Coffs Harbour", v:0.2314, note:"observed 0.271 \u00b7 199 crashes \u00b7 gap -0.040"},
+  {l:"Shoalhaven", v:0.2326, note:"observed 0.296 \u00b7 291 crashes \u00b7 gap -0.063"},
+  {l:"Lake Macquarie", v:0.2326, note:"observed 0.287 \u00b7 478 crashes \u00b7 gap -0.054"},
+  {l:"Ku-ring-gai", v:0.2328, note:"observed 0.253 \u00b7 194 crashes \u00b7 gap -0.020"},
+  {l:"Sutherland", v:0.2330, note:"observed 0.302 \u00b7 394 crashes \u00b7 gap -0.069"},
+  {l:"Campbelltown", v:0.2335, note:"observed 0.256 \u00b7 356 crashes \u00b7 gap -0.022"},
+  {l:"Camden", v:0.2344, note:"observed 0.231 \u00b7 182 crashes \u00b7 gap +0.004"},
+  {l:"Hornsby", v:0.2360, note:"observed 0.281 \u00b7 281 crashes \u00b7 gap -0.045"},
+  {l:"Port Stephens", v:0.2437, note:"observed 0.321 \u00b7 156 crashes \u00b7 gap -0.077"},
+  {l:"Mid-Coast", v:0.2613, note:"observed 0.345 \u00b7 293 crashes \u00b7 gap -0.083"},
+  {l:"Tamworth Regional", v:0.2628, note:"observed 0.319 \u00b7 160 crashes \u00b7 gap -0.056"},
+  {l:"Cessnock", v:0.2632, note:"observed 0.385 \u00b7 208 crashes \u00b7 gap -0.121"},
+  {l:"Clarence Valley", v:0.2635, note:"observed 0.314 \u00b7 159 crashes \u00b7 gap -0.051"},
+  {l:"Port Macquarie-Hastings", v:0.2784, note:"observed 0.333 \u00b7 153 crashes \u00b7 gap -0.055"}
 ];
 
 var state = {}; // index -> "accepted" | "rejected"

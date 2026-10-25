@@ -1,0 +1,31 @@
+segment,level,n,observed_rate,mean_predicted,calibration_gap,ROC_AUC
+Urbanisation,Country non-urban,2543,0.3181,0.2633,-0.0549,0.6806
+Urbanisation,Country urban,4901,0.252,0.2251,-0.0269,0.6597
+Urbanisation,Newcastle met. area,922,0.2473,0.2174,-0.0299,0.6039
+Urbanisation,Sydney metro. area,9991,0.2329,0.21,-0.0229,0.5816
+Urbanisation,Wollongong met. area,581,0.2719,0.2238,-0.0482,0.6892
+Speed limit,100 km/h,2072,0.3224,0.2635,-0.0589,0.6886
+Speed limit,110 km/h,841,0.2628,0.2341,-0.0286,0.6658
+Speed limit,40 km/h,809,0.22,0.2115,-0.0085,0.6
+Speed limit,50 km/h,6334,0.2168,0.2104,-0.0064,0.6017
+Speed limit,60 km/h,5108,0.2435,0.2104,-0.0331,0.5994
+Speed limit,70 km/h,1591,0.2583,0.2061,-0.0523,0.5811
+Speed limit,80 km/h,1819,0.3139,0.256,-0.0579,0.661
+Speed limit,90 km/h,297,0.2458,0.2362,-0.0096,0.685
+Natural lighting,Darkness,4883,0.2353,0.214,-0.0213,0.6198
+Natural lighting,Dawn,592,0.2331,0.2203,-0.0128,0.6236
+Natural lighting,Daylight,12209,0.2619,0.2272,-0.0347,0.6271
+Natural lighting,Dusk,1143,0.2336,0.2136,-0.0199,0.6518
+Weather,Fine,15366,0.2539,0.224,-0.0299,0.6307
+Weather,Overcast,1099,0.2684,0.2171,-0.0514,0.6363
+Weather,Raining,2074,0.2194,0.2062,-0.0132,0.5934
+Weather,Unknown,242,0.2893,0.2391,-0.0502,0.688
+Road classification (admin),Local,7177,0.2461,0.2264,-0.0197,0.6382
+Road classification (admin),Regional,3078,0.2765,0.2316,-0.0448,0.6181
+Road classification (admin),State,8684,0.2464,0.2146,-0.0318,0.6265
+Type of location,2-way undivided,7350,0.2849,0.2458,-0.0391,0.6705
+Type of location,Divided road,2221,0.24,0.2076,-0.0324,0.5681
+Type of location,Dual freeway,816,0.2194,0.2157,-0.0036,0.6584
+Type of location,Roundabout,1031,0.1872,0.1978,0.0106,0.6084
+Type of location,T-junction,4395,0.2428,0.2125,-0.0303,0.5897
+Type of location,X-intersection,2829,0.2209,0.1958,-0.0252,0.5912

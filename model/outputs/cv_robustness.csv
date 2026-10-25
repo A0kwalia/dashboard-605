@@ -1,0 +1,4 @@
+design,mean_ROC_AUC,std
+5-fold stratified CV (random),0.6281,0.0065
+5-fold grouped CV (held-out LGAs),0.6161,0.0074
+Rolling-origin temporal CV,0.6208,0.0017

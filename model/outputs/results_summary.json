@@ -1,0 +1,19 @@
+{
+  "target": "KSI",
+  "selected_model": "C3 HistGradientBoosting",
+  "test_roc_auc": 0.6299,
+  "roc_auc_95ci": [
+    0.6205,
+    0.6383
+  ],
+  "test_pr_auc": 0.3845,
+  "test_brier": 0.1813,
+  "expected_calibration_error": 0.0338,
+  "b2_roc_auc": 0.5697,
+  "prevalence_test": 0.2512,
+  "prevalence_dev": 0.2218,
+  "top10_precision": 0.4728,
+  "top10_lift": 1.8823,
+  "grouped_cv_auc": 0.6161,
+  "rolling_cv_auc": 0.6208
+}

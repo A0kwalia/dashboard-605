@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scenario explorer</title>
+<style>
+:root{--maroon:#8C1D40;--maroon-dark:#6E1633;--asphalt:#21252B;--slate:#5A5F66;--grey:#B9AFB3;
+  --line:#DDD7D9;--faint:#F6F4F3;--teal:#2F6F6B;--amber:#E39A2C;}
+*{box-sizing:border-box}
+body{margin:0;padding:26px;font-family:Calibri,"Segoe UI",system-ui,sans-serif;color:var(--asphalt);background:#fff;max-width:1120px}
+h1{font-family:Cambria,Georgia,serif;font-size:21px;margin:0 0 4px}
+.sub{color:var(--slate);font-size:13.5px;line-height:1.55;margin:0 0 14px;max-width:820px}
+.advisory{font-size:12.5px;color:var(--asphalt);background:#FBF1F4;border-left:3px solid var(--maroon);
+  padding:8px 12px;margin:0 0 18px;max-width:820px;line-height:1.5}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:22px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+fieldset{border:1px solid #EDEAEB;border-radius:6px;margin:0 0 12px;padding:8px 14px 12px}
+legend{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--slate);padding:0 6px}
+.f{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px;align-items:center;margin:6px 0}
+.f label{font-size:12.5px;color:var(--slate)}
+.f select{width:100%;font:inherit;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--asphalt)}
+.f select.changed{border-color:var(--maroon);background:#FFFBFC}
+details summary{cursor:pointer;font-size:12.5px;color:var(--maroon-dark);margin:2px 0 4px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 0}
+.btn{border:1px solid var(--line);background:#fff;color:var(--asphalt);font:inherit;font-size:12.5px;padding:6px 12px;border-radius:4px;cursor:pointer}
+.btn:hover{background:var(--faint)}
+.btn.primary{background:var(--maroon);border-color:var(--maroon);color:#fff}
+.btn.primary:hover{background:var(--maroon-dark)}
+.card{border:1px solid #EDEAEB;border-radius:6px;padding:16px 18px;margin:0 0 14px}
+.risk{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.risk .pct{font-family:Cambria,Georgia,serif;font-size:40px;line-height:1;color:var(--asphalt);font-variant-numeric:tabular-nums}
+.band{font-size:12px;font-weight:600;padding:3px 9px;border-radius:3px;color:#fff}
+.ratio{font-size:13px;color:var(--slate)}
+.scale{position:relative;height:10px;border-radius:5px;margin:16px 0 4px;
+  background:linear-gradient(90deg,#E9E4E6 0%,#E9E4E6 var(--b1),#E7C3CF var(--b1),#E7C3CF var(--b2),#C9718E var(--b2),#C9718E var(--b3),#8C1D40 var(--b3),#8C1D40 100%)}
+.scale .mk{position:absolute;top:-5px;width:2px;height:20px;background:var(--asphalt)}
+.scale .avg{position:absolute;top:-3px;width:0;height:16px;border-left:1px dashed var(--slate)}
+.scalelab{display:flex;justify-content:space-between;font-size:11px;color:var(--slate)}
+.meaning{font-size:12.5px;color:var(--slate);line-height:1.55;margin:10px 0 0}
+.warn{font-size:12.5px;line-height:1.5;margin:10px 0 0;padding:7px 10px;border-radius:4px;background:#FFF6E8;border-left:3px solid var(--amber)}
+.ok{font-size:12.5px;line-height:1.5;margin:10px 0 0;color:var(--slate)}
+h2{font-size:14px;margin:0 0 4px;font-family:Cambria,Georgia,serif;font-weight:normal}
+.hint{font-size:12px;color:var(--slate);margin:0 0 10px;line-height:1.5}
+.fac{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) 62px;gap:10px;align-items:center;padding:6px 0;border-top:1px solid #F1EEEF}
+.fac:first-of-type{border-top:none}
+.fac .n{font-size:13px}
+.fac .v{font-size:11.5px;color:var(--slate)}
+.fac .tag{font-size:10.5px;color:var(--slate);border:1px solid var(--line);border-radius:3px;padding:0 4px;margin-left:4px;white-space:nowrap}
+.bar{position:relative;height:14px}
+.bar .axis{position:absolute;left:50%;top:-3px;bottom:-3px;border-left:1px solid var(--grey)}
+.bar .fill{position:absolute;top:0;height:14px;border-radius:2px}
+.fac .d{font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th{text-align:left;font-size:11px;color:var(--slate);font-weight:600;border-bottom:1px solid var(--line);padding:4px 8px 6px 0}
+td{border-bottom:1px solid #F1EEEF;padding:6px 8px 6px 0;vertical-align:top}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.x{border:none;background:none;color:var(--slate);cursor:pointer;font-size:14px}
+.empty{font-size:12.5px;color:var(--slate)}
+.src{margin-top:22px;padding-top:12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--slate);line-height:1.55}
+#loading{font-size:13px;color:var(--slate)}
+</style>
+</head>
+<body>
+<h1>Scenario explorer</h1>
+<p class="sub">Describe a road site and the conditions you want to test. The model returns the probability that a reported crash there would kill or seriously injure someone (KSI), and the five factors that move that estimate most. Change one input at a time to run wet-versus-dry or day-versus-night comparisons.</p>
+<div class="advisory"><b>Advisory estimate only.</b> Use this to prioritise sites for an engineering review, not to make a funding decision on its own. A trained road safety professional should check every result.</div>
+
+<div id="loading">Loading model&hellip;</div>
+<div class="grid" id="app" style="display:none">
+  <div>
+    <form id="form" onsubmit="return false"></form>
+    <div class="btns">
+      <button class="btn primary" id="addBtn" type="button">Add to comparison</button>
+      <button class="btn" id="resetBtn" type="button">Reset to typical crash</button>
+    </div>
+  </div>
+  <div>
+    <div class="card">
+      <div class="risk"><span class="pct" id="pct"></span><span class="band" id="band"></span><span class="ratio" id="ratio"></span></div>
+      <div class="scale" id="scale"><div class="avg" id="avgMk" title="State average"></div><div class="mk" id="mk"></div></div>
+      <div class="scalelab"><span>0%</span><span id="scaleMax"></span></div>
+      <p class="meaning" id="meaning"></p>
+      <div id="reliab"></div>
+    </div>
+    <div class="card">
+      <h2>What drives this estimate</h2>
+      <p class="hint">Change in KSI probability caused by each factor, compared with the conditions of a typical reported crash. Factors you did not change are held at the most common value and are marked <span class="tag" style="margin:0">typical</span>. These are associations in reported crashes, not causes: wet roads, for example, produce many more minor crashes, so a smaller share of wet-road crashes are KSI.</p>
+      <div id="factors"></div>
+    </div>
+    <div class="card">
+      <h2>Comparison</h2>
+      <p class="hint">Saved scenarios, highest risk first. Only the inputs that differ from the typical crash are listed.</p>
+      <div id="compare"><p class="empty">No scenarios saved yet.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="src" id="src">Model: histogram gradient boosting with sigmoid calibration, trained on NSW Road Crash Data 2020&ndash;2023 and tested on the held-out 2024 year &middot; Transport for NSW (CC BY 4.0) &middot; Calculated in your browser: no data leaves this page.</div>
+
+<script src="ksi_model.js"></script>
+<script src="model_ksi.js"></script>
+<script>
+(function(){
+"use strict";
+var M = window.MODEL_KSI, model = new KSIModel(M), meta = M.meta;
+var AVG = meta.state_average, BANDS = meta.bands;
+
+// ---- inputs shown to the planner (all 24 model features are covered) ----
+var SECTIONS = [
+  {title:"Where", open:true, fields:[
+    ["LGA","Council area (LGA)"], ["Urbanisation","Urbanisation"], ["Road classification (admin)","Road classification"],
+    ["SPEED_LIMIT_KMH","Speed limit"], ["Street type","Street type"]]},
+  {title:"Road layout", open:true, fields:[
+    ["Type of location","Type of location"], ["Alignment","Alignment"], ["Road surface","Road surface"],
+    ["Signals operation","Signals"], ["Other traffic control","Other traffic control"]]},
+  {title:"Conditions", open:true, fields:[
+    ["Weather","Weather"], ["Natural lighting","Natural lighting"], ["Surface condition","Surface condition"],
+    ["Two-hour intervals","Time of day"], ["Day of week of crash","Day of week"], ["Month of crash","Month"]]},
+  {title:"More site details", open:false, fields:[
+    ["School zone location","School zone"], ["School zone active","School zone active"],
+    ["Primary permanent feature","Permanent feature"], ["Primary hazardous feature","Hazardous feature"],
+    ["Primary temporary feature","Temporary feature"]]}
+];
+// factor groups for the explanation; location features move together
+var GROUPS = [
+  {label:"Council area (location)", features:["LGA","Latitude","Longitude","Conurbation 1"], key:"LGA"},
+  {label:"Speed limit", features:["SPEED_LIMIT_KMH"], key:"SPEED_LIMIT_KMH"}
+];
+SECTIONS.forEach(function(s){ s.fields.forEach(function(f){
+  if(f[0]!=="LGA" && f[0]!=="SPEED_LIMIT_KMH") GROUPS.push({label:f[1], features:[f[0]], key:f[0]});
+});});
+
+var SPEEDS = [10,20,30,40,50,60,70,80,90,100,110];
+var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+var DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+
+function options(f){
+  if(f==="SPEED_LIMIT_KMH") return SPEEDS.map(function(v){return [String(v), v+" km/h"];});
+  var v = M.vocab[f].slice();
+  if(f==="LGA") v.sort();
+  else if(f==="Month of crash") v.sort(function(a,b){return MONTHS.indexOf(a)-MONTHS.indexOf(b);});
+  else if(f==="Day of week of crash") v.sort(function(a,b){return DAYS.indexOf(a)-DAYS.indexOf(b);});
+  else if(f==="Two-hour intervals") v.sort();
+  return v.map(function(x){return [x,x];});
+}
+
+function typical(){
+  var s = {}; for(var k in M.mode) s[k] = String(M.mode[k]);
+  s.SPEED_LIMIT_KMH = String(Math.round(M.mode.SPEED_LIMIT_KMH));
+  applyLGA(s, s.LGA); s.Urbanisation = M.lga_defaults[s.LGA].Urbanisation;
+  return s;
+}
+function applyLGA(s, lga){
+  var d = M.lga_defaults[lga];
+  s.Latitude = d.Latitude; s.Longitude = d.Longitude; s["Conurbation 1"] = d["Conurbation 1"];
+}
+var TYP = typical(), state = typical();
+
+// ---- build the form ----
+var form = document.getElementById("form"), selects = {};
+SECTIONS.forEach(function(sec){
+  var fs = document.createElement("fieldset"), lg = document.createElement("legend");
+  lg.textContent = sec.title; fs.appendChild(lg);
+  var host = fs;
+  if(!sec.open){ var det=document.createElement("details"), sm=document.createElement("summary");
+    sm.textContent="Show "+sec.fields.length+" more inputs"; det.appendChild(sm); fs.appendChild(det); host=det; }
+  sec.fields.forEach(function(fd){
+    var row=document.createElement("div"); row.className="f";
+    var id="in_"+fd[0].replace(/[^a-z0-9]/gi,"_");
+    var lab=document.createElement("label"); lab.htmlFor=id; lab.textContent=fd[1];
+    var sel=document.createElement("select"); sel.id=id;
+    options(fd[0]).forEach(function(o){ var op=document.createElement("option"); op.value=o[0]; op.textContent=o[1]; sel.appendChild(op); });
+    sel.addEventListener("change", function(){
+      state[fd[0]] = sel.value;
+      if(fd[0]==="LGA"){ applyLGA(state, sel.value); state.Urbanisation = M.lga_defaults[sel.value].Urbanisation; }
+      sync(); update();
+    });
+    selects[fd[0]] = sel; row.appendChild(lab); row.appendChild(sel); host.appendChild(row);
+  });
+  form.appendChild(fs);
+});
+function sync(){
+  for(var f in selects){ selects[f].value = state[f]; selects[f].classList.toggle("changed", state[f]!==TYP[f]); }
+}
+
+// ---- output ----
+function bandOf(p){ for(var i=BANDS.length-1;i>=0;i--) if(p>=BANDS[i].from) return BANDS[i]; return BANDS[0]; }
+function pct(p,d){ return (p*100).toFixed(d===undefined?1:d)+"%"; }
+function pp(d){ var v=d*100; return (v>=0?"+":"−")+Math.abs(v).toFixed(1); }
+function displayValue(f){ return f==="SPEED_LIMIT_KMH" ? state[f]+" km/h" : state[f]; }
+
+var MAXP = BANDS[BANDS.length-1].from*1.6;
+(function(){ var sc=document.getElementById("scale");
+  for(var i=1;i<BANDS.length;i++) sc.style.setProperty("--b"+i, (BANDS[i].from/MAXP*100)+"%");
+  document.getElementById("avgMk").style.left=(AVG/MAXP*100)+"%";
+  document.getElementById("scaleMax").textContent=pct(MAXP,0)+"+";
+})();
+
+function update(){
+  var row = model.row(state), ex = model.explain(row, GROUPS), p = ex.p, b = bandOf(p);
+  document.getElementById("pct").textContent = pct(p);
+  var be = document.getElementById("band"); be.textContent = b.label+" risk"; be.style.background = b.color;
+  document.getElementById("ratio").textContent = (p/AVG).toFixed(2)+"× the state average of "+pct(AVG);
+  document.getElementById("mk").style.left = Math.min(100, p/MAXP*100)+"%";
+  document.getElementById("meaning").innerHTML =
+    "Of the 2024 crashes the model placed in the <b>"+b.label+"</b> band, <b>"+pct(b.observed)+"</b> were fatal or serious-injury crashes ("+
+    b.n.toLocaleString()+" crashes). The estimate is an average for this combination of conditions; it cannot see the vehicles or people involved in any single crash.";
+  var lp = M.lga_perf[state.LGA], r = document.getElementById("reliab");
+  if(lp && lp.auc < 0.60) r.innerHTML = '<div class="warn"><b>Treat with caution in '+state.LGA+'.</b> On 2024 crashes here the model ranked KSI crashes only slightly better than chance (ROC-AUC '+lp.auc.toFixed(2)+', '+lp.n+' crashes). Check against local crash history before acting.</div>';
+  else if(!lp) r.innerHTML = '<div class="warn"><b>Not checked for '+state.LGA+'.</b> Too few 2024 crashes here (under 150) to test the model locally.</div>';
+  else r.innerHTML = '<p class="ok">Checked on '+lp.n+' crashes in '+state.LGA+' in 2024: ROC-AUC '+lp.auc.toFixed(2)+' (statewide '+meta.test_roc_auc.toFixed(2)+').</p>';
+
+  var top = ex.factors.slice(0,5), mx = Math.max(0.02, Math.abs(top[0].delta));
+  var html = "";
+  top.forEach(function(fc){
+    var g = fc.group, changed = g.features.some(function(f){ return state[f]!==TYP[f]; }) || state[g.key]!==TYP[g.key];
+    var w = Math.abs(fc.delta)/mx*50, up = fc.delta>=0;
+    html += '<div class="fac"><div><div class="n">'+g.label+(changed?"":'<span class="tag">typical</span>')+'</div>'+
+      '<div class="v">'+displayValue(g.key)+'</div></div>'+
+      '<div class="bar"><div class="axis"></div><div class="fill" style="'+(up?"left:50%":"right:50%")+';width:'+w+'%;background:'+(up?"#8C1D40":"#2F6F6B")+'"></div></div>'+
+      '<div class="d" style="color:'+(up?"#8C1D40":"#2F6F6B")+'">'+pp(fc.delta)+' pts</div></div>';
+  });
+  document.getElementById("factors").innerHTML = html;
+  last = {p:p, band:b, state:JSON.parse(JSON.stringify(state))};
+}
+
+// ---- comparison ----
+var saved = [], last = null;
+function diffText(s){
+  var out=[];
+  SECTIONS.forEach(function(sec){ sec.fields.forEach(function(fd){
+    if(s[fd[0]]!==TYP[fd[0]]) out.push(fd[1]+": "+(fd[0]==="SPEED_LIMIT_KMH"?s[fd[0]]+" km/h":s[fd[0]]));
+  });});
+  return out.length ? out.join(" &middot; ") : "Typical crash (no changes)";
+}
+function renderCompare(){
+  var host = document.getElementById("compare");
+  if(!saved.length){ host.innerHTML='<p class="empty">No scenarios saved yet.</p>'; return; }
+  var rows = saved.slice().sort(function(a,b){return b.p-a.p;});
+  var h='<table><thead><tr><th>KSI risk</th><th>Band</th><th>Scenario</th><th></th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    h+='<tr><td class="num">'+pct(r.p)+'</td><td><span class="band" style="background:'+r.band.color+'">'+r.band.label+'</span></td><td>'+diffText(r.state)+'</td>'+
+       '<td><button class="x" title="Remove" data-id="'+r.id+'">&times;</button></td></tr>';
+  });
+  host.innerHTML = h+'</tbody></table>';
+  host.querySelectorAll(".x").forEach(function(b){ b.onclick=function(){
+    var id=+b.getAttribute("data-id"); saved=saved.filter(function(s){return s.id!==id;}); renderCompare(); }; });
+}
+var nextId = 1;
+document.getElementById("addBtn").onclick = function(){
+  if(saved.length>=12) saved.shift();
+  saved.push({id:nextId++, p:last.p, band:last.band, state:last.state}); renderCompare();
+};
+document.getElementById("resetBtn").onclick = function(){ state = typical(); sync(); update(); };
+
+document.getElementById("loading").style.display="none";
+document.getElementById("app").style.display="";
+sync(); update();
+})();
+</script>
+</body>
+</html>

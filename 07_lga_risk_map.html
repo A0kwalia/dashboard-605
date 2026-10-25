@@ -15,14 +15,15 @@ svg{max-width:100%;height:auto;display:block;border:1px solid #EDEAEB;border-rad
 border-radius:5px;opacity:0;transition:opacity .12s;z-index:99;line-height:1.5;max-width:240px}
 </style></head><body>
 <h1>Risk map by local government area</h1>
-<p class="sub">Mean predicted risk per LGA across the 2024 test year. Bubble size is crash volume, colour is predicted risk. Drag the slider to highlight LGAs above a chosen threshold.</p>
-<div class="ctl">Highlight areas with mean predicted risk above <b id="thv"></b>
+<p class="sub">Mean predicted KSI risk per LGA across the 2024 test year, for LGAs with at least 60 crashes. Bubble size is crash volume, colour is predicted risk. Drag the slider to highlight LGAs above a chosen threshold.</p>
+<div class="ctl">Highlight areas with mean predicted KSI risk above <b id="thv"></b>
 &nbsp;&nbsp;<span id="count"></span><br><input type="range" id="slider"></div>
 <svg id="c"></svg>
-<p class="cap">There is no strong coastal-inland or metro-rural gradient. Location features contribute almost nothing to the prediction, so the map communicates risk rather than generating it.</p>
-<div class="src">Source: assignment1_updated.ipynb, Part B &middot; NSW Road Crash Data 2020&ndash;2024, Transport for NSW (CC BY 4.0) &middot; Calibrated histogram gradient boosting, evaluated on the held-out 2024 year &middot; Hover any element for exact values.</div>
+<canvas id="cv" style="display:none;max-width:100%;border:1px solid #EDEAEB;border-radius:6px"></canvas>
+<p class="cap">Mean predicted KSI risk ranges from 7.7% (Queanbeyan-Palerang Regional) to 28.4% (Wollondilly). Inland and regional LGAs (west of 150.5&deg;E) average 21.5% against 22.8% for coastal and metropolitan LGAs. The map summarises the model's output by area; it does not mean location itself causes the risk.</p>
+<div class="src">Source: KSI model (histogram gradient boosting, sigmoid calibration), trained on 2020&ndash;2023 and evaluated on the held-out 2024 year &middot; NSW Road Crash Data 2020&ndash;2024, Transport for NSW (CC BY 4.0) &middot; Hover any element for exact values.</div>
 <div class="tip" id="tip"></div>
-<script>var SPEC={"type": "map", "w": 660, "h": 540, "points": [{"l": "Albury", "x": 146.93175, "y": -36.0656475, "v": 0.5991685885045249, "obs": 0.4567901234567901, "n": 162}, {"l": "Armidale Regional", "x": 151.673093, "y": -30.505946, "v": 0.7067410788396877, "obs": 0.782608695652174, "n": 69}, {"l": "Ballina", "x": 153.529761, "y": -28.847446, "v": 0.6789498678104894, "obs": 0.6396396396396397, "n": 111}, {"l": "Bathurst Regional", "x": 149.578649, "y": -33.41859, "v": 0.7011246435752475, "obs": 0.7606837606837606, "n": 117}, {"l": "Bayside", "x": 151.147863, "y": -33.946094, "v": 0.6831377412504983, "obs": 0.7086092715231788, "n": 453}, {"l": "Bega Valley", "x": 149.845142, "y": -36.737863, "v": 0.7063938377841787, "obs": 0.7792207792207793, "n": 77}, {"l": "Blacktown", "x": 150.872594, "y": -33.7562765, "v": 0.6426267719492792, "obs": 0.6603139013452914, "n": 892}, {"l": "Blue Mountains", "x": 150.470094, "y": -33.70858, "v": 0.6944087867078667, "obs": 0.7172413793103448, "n": 145}, {"l": "Burwood", "x": 151.10011350000002, "y": -33.87958, "v": 0.692392455304024, "obs": 0.6413043478260869, "n": 92}, {"l": "Byron", "x": 153.541148, "y": -28.632165, "v": 0.6391178286269822, "obs": 0.6774193548387096, "n": 155}, {"l": "Camden", "x": 150.75266499999998, "y": -34.0270555, "v": 0.6799517532729781, "obs": 0.7087912087912088, "n": 182}, {"l": "Campbelltown", "x": 150.82776, "y": -34.048666499999996, "v": 0.6789552160838703, "obs": 0.6910112359550562, "n": 356}, {"l": "Canada Bay", "x": 151.1069935, "y": -33.8570105, "v": 0.687935422774846, "obs": 0.6986301369863014, "n": 146}, {"l": "Canterbury-Bankstown", "x": 151.036461, "y": -33.919678, "v": 0.6914512715587969, "obs": 0.6822033898305084, "n": 944}, {"l": "Central Coast", "x": 151.398422, "y": -33.378728, "v": 0.6406943738151166, "obs": 0.6472564389697648, "n": 893}, {"l": "Cessnock", "x": 151.375272, "y": -32.826695, "v": 0.7131470677720054, "obs": 0.7403846153846154, "n": 208}, {"l": "Clarence Valley", "x": 152.975031, "y": -29.680239, "v": 0.6940693249359243, "obs": 0.7484276729559748, "n": 159}, {"l": "Coffs Harbour", "x": 153.114531, "y": -30.293446, "v": 0.6596975070276656, "obs": 0.6582914572864321, "n": 199}, {"l": "Cumberland", "x": 150.99188299999997, "y": -33.8399965, "v": 0.6825816423725176, "obs": 0.6986062717770035, "n": 574}, {"l": "Dubbo Regional", "x": 148.618697, "y": -32.252977, "v": 0.6881313440182236, "obs": 0.6526946107784432, "n": 167}, {"l": "Eurobodalla", "x": 150.12818, "y": -35.840630000000004, "v": 0.7192839264303227, "obs": 0.7291666666666666, "n": 96}, {"l": "Fairfield", "x": 150.92311999999998, "y": -33.8720785, "v": 0.6792459306399524, "obs": 0.745136186770428, "n": 514}, {"l": "Georges River", "x": 151.098733, "y": -33.966119, "v": 0.6864628612001886, "obs": 0.7063197026022305, "n": 269}, {"l": "Goulburn Mulwaree", "x": 149.73301149999998, "y": -34.749164, "v": 0.6904234166877213, "obs": 0.6929824561403509, "n": 114}, {"l": "Griffith", "x": 146.04194, "y": -34.28505, "v": 0.6589121297989048, "obs": 0.6764705882352942, "n": 68}, {"l": "Hawkesbury", "x": 150.803471, "y": -33.602005, "v": 0.6775188383856239, "obs": 0.7030567685589519, "n": 229}, {"l": "Hilltops", "x": 148.3850665, "y": -34.355149, "v": 0.7035187620966704, "obs": 0.7368421052631579, "n": 76}, {"l": "Hornsby", "x": 151.099295, "y": -33.702357, "v": 0.6628912446689192, "obs": 0.6797153024911032, "n": 281}, {"l": "Inner West", "x": 151.1585255, "y": -33.8912825, "v": 0.679183748598262, "obs": 0.6509433962264151, "n": 424}, {"l": "Kempsey", "x": 152.83980150000002, "y": -31.060113, "v": 0.6701154711615095, "obs": 0.7567567567567568, "n": 74}, {"l": "Ku-ring-gai", "x": 151.15024499999998, "y": -33.745216, "v": 0.6658418837391618, "obs": 0.6855670103092784, "n": 194}, {"l": "Lake Macquarie", "x": 151.6224775, "y": -32.9877545, "v": 0.6742538393411167, "obs": 0.6610878661087866, "n": 478}, {"l": "Lismore", "x": 153.293051, "y": -28.814492, "v": 0.6904618081976982, "obs": 0.7037037037037037, "n": 108}, {"l": "Lithgow", "x": 150.133834, "y": -33.482758, "v": 0.7427386283403511, "obs": 0.7471264367816092, "n": 87}, {"l": "Liverpool", "x": 150.891593, "y": -33.930246, "v": 0.6698011003680022, "obs": 0.7050847457627119, "n": 590}, {"l": "Maitland", "x": 151.5858915, "y": -32.748352, "v": 0.6875509150281438, "obs": 0.71875, "n": 160}, {"l": "Mid-Coast", "x": 152.446934, "y": -32.017463, "v": 0.6628977150352985, "obs": 0.6757679180887372, "n": 293}, {"l": "Mid-Western Regional", "x": 149.65481, "y": -32.598651, "v": 0.7155945785772133, "obs": 0.776, "n": 125}, {"l": "Newcastle", "x": 151.7213305, "y": -32.908778, "v": 0.6521293156356162, "obs": 0.6283783783783784, "n": 444}, {"l": "North Sydney", "x": 151.211178, "y": -33.830405, "v": 0.7032664913415559, "obs": 0.7043478260869566, "n": 115}, {"l": "Northern Beaches", "x": 151.278787, "y": -33.75319, "v": 0.6842672473796998, "obs": 0.7205542725173211, "n": 433}, {"l": "Orange", "x": 149.100822, "y": -33.283128000000005, "v": 0.6713114540087212, "obs": 0.6086956521739131, "n": 92}, {"l": "Parramatta", "x": 151.021919, "y": -33.804927, "v": 0.6763091739059779, "obs": 0.6786324786324787, "n": 585}, {"l": "Penrith", "x": 150.719876, "y": -33.763053, "v": 0.670831077113894, "obs": 0.7255369928400954, "n": 419}, {"l": "Port Macquarie-Hastings", "x": 152.819869, "y": -31.457432, "v": 0.7163651954555437, "obs": 0.7450980392156863, "n": 153}, {"l": "Port Stephens", "x": 151.855344, "y": -32.7614605, "v": 0.6826298833161127, "obs": 0.6666666666666666, "n": 156}, {"l": "Queanbeyan-Palerang Regional", "x": 149.240912, "y": -35.356324, "v": 0.6305405368931701, "obs": 0.6240601503759399, "n": 133}, {"l": "Randwick", "x": 151.23926, "y": -33.923178, "v": 0.7123230187609871, "obs": 0.7396226415094339, "n": 265}, {"l": "Richmond Valley", "x": 153.08166599999998, "y": -28.874814, "v": 0.7022123315059087, "obs": 0.7297297297297297, "n": 74}, {"l": "Ryde", "x": 151.106676, "y": -33.800959, "v": 0.6896829913488924, "obs": 0.7127272727272728, "n": 275}, {"l": "Shellharbour", "x": 150.8366995, "y": -34.568024, "v": 0.6382263955332672, "obs": 0.7661290322580645, "n": 124}, {"l": "Shoalhaven", "x": 150.599803, "y": -34.946348, "v": 0.6972188042025341, "obs": 0.697594501718213, "n": 291}, {"l": "Singleton", "x": 151.165557, "y": -32.56879, "v": 0.7165726525121734, "obs": 0.7922077922077922, "n": 77}, {"l": "Snowy Monaro Regional", "x": 149.119622, "y": -36.361923, "v": 0.6418742123079604, "obs": 0.6373626373626373, "n": 91}, {"l": "Snowy Valleys", "x": 148.221541, "y": -35.415753, "v": 0.6864535744397698, "obs": 0.6376811594202898, "n": 69}, {"l": "Strathfield", "x": 151.070763, "y": -33.874484, "v": 0.6870846362142689, "obs": 0.706766917293233, "n": 133}, {"l": "Sutherland", "x": 151.084892, "y": -34.0353105, "v": 0.6652194315274051, "obs": 0.6675126903553299, "n": 394}, {"l": "Sydney", "x": 151.206082, "y": -33.882402, "v": 0.7178415325998226, "obs": 0.7597503900156006, "n": 641}, {"l": "Tamworth Regional", "x": 150.918725, "y": -31.0920495, "v": 0.7155310754015305, "obs": 0.675, "n": 160}, {"l": "The Hills", "x": 150.96510999999998, "y": -33.715973, "v": 0.6606583334998826, "obs": 0.6867469879518072, "n": 332}, {"l": "Tweed", "x": 153.526536, "y": -28.250715, "v": 0.6790268594729979, "obs": 0.65234375, "n": 256}, {"l": "Wagga Wagga", "x": 147.36119200000002, "y": -35.12652, "v": 0.6165937343684411, "obs": 0.6263736263736264, "n": 182}, {"l": "Waverley", "x": 151.264633, "y": -33.8922755, "v": 0.72194512209721, "obs": 0.7542372881355932, "n": 118}, {"l": "Willoughby", "x": 151.189258, "y": -33.802345, "v": 0.7075801938075209, "obs": 0.7153284671532847, "n": 137}, {"l": "Wingecarribee", "x": 150.39691499999998, "y": -34.5071565, "v": 0.6651142210989754, "obs": 0.7028985507246377, "n": 138}, {"l": "Wollondilly", "x": 150.611367, "y": -34.205244, "v": 0.7306561187129531, "obs": 0.6666666666666666, "n": 117}, {"l": "Wollongong", "x": 150.882344, "y": -34.423619, "v": 0.6544952667880105, "obs": 0.6739606126914661, "n": 457}, {"l": "Woollahra", "x": 151.244607, "y": -33.879071, "v": 0.7184439102778273, "obs": 0.6194690265486725, "n": 113}, {"l": "Yass Valley", "x": 148.92552, "y": -34.837192, "v": 0.5963184788300091, "obs": 0.5392156862745098, "n": 102}], "thresh": 0.692222398225883};</script>
+<script>var SPEC={"type": "map", "w": 660, "h": 540, "points": [{"l": "Albury", "x": 146.93175, "y": -36.0656475, "v": 0.2234733806158843, "obs": 0.19135802469135801, "n": 162}, {"l": "Armidale Regional", "x": 151.673093, "y": -30.505946, "v": 0.24513308500305422, "obs": 0.36231884057971014, "n": 69}, {"l": "Ballina", "x": 153.529761, "y": -28.847446, "v": 0.23142733612473854, "obs": 0.27927927927927926, "n": 111}, {"l": "Bathurst Regional", "x": 149.578649, "y": -33.41859, "v": 0.22286379070370899, "obs": 0.3418803418803419, "n": 117}, {"l": "Bayside", "x": 151.147863, "y": -33.946094, "v": 0.21315104638892968, "obs": 0.23841059602649006, "n": 453}, {"l": "Bega Valley", "x": 149.845142, "y": -36.737863, "v": 0.277868564351353, "obs": 0.2727272727272727, "n": 77}, {"l": "Blacktown", "x": 150.872594, "y": -33.7562765, "v": 0.19616442214303903, "obs": 0.2533632286995516, "n": 892}, {"l": "Blue Mountains", "x": 150.470094, "y": -33.70858, "v": 0.22734233463324643, "obs": 0.22758620689655173, "n": 145}, {"l": "Burwood", "x": 151.10011350000002, "y": -33.87958, "v": 0.20785502459647276, "obs": 0.13043478260869565, "n": 92}, {"l": "Byron", "x": 153.541148, "y": -28.632165, "v": 0.19793325238525092, "obs": 0.16774193548387098, "n": 155}, {"l": "Camden", "x": 150.75266499999998, "y": -34.0270555, "v": 0.2344303722094709, "obs": 0.23076923076923078, "n": 182}, {"l": "Campbelltown", "x": 150.82776, "y": -34.048666499999996, "v": 0.23353728353713396, "obs": 0.2556179775280899, "n": 356}, {"l": "Canada Bay", "x": 151.1069935, "y": -33.8570105, "v": 0.20518874615552254, "obs": 0.2191780821917808, "n": 146}, {"l": "Canterbury-Bankstown", "x": 151.036461, "y": -33.919678, "v": 0.21132099087193187, "obs": 0.21822033898305085, "n": 944}, {"l": "Central Coast", "x": 151.398422, "y": -33.378728, "v": 0.22799885588346896, "obs": 0.2777155655095185, "n": 893}, {"l": "Cessnock", "x": 151.375272, "y": -32.826695, "v": 0.26316620511550637, "obs": 0.38461538461538464, "n": 208}, {"l": "Clarence Valley", "x": 152.975031, "y": -29.680239, "v": 0.263501829873127, "obs": 0.31446540880503143, "n": 159}, {"l": "Coffs Harbour", "x": 153.114531, "y": -30.293446, "v": 0.23141789978264918, "obs": 0.271356783919598, "n": 199}, {"l": "Cumberland", "x": 150.99188299999997, "y": -33.8399965, "v": 0.20621475710549889, "obs": 0.25261324041811845, "n": 574}, {"l": "Dubbo Regional", "x": 148.618697, "y": -32.252977, "v": 0.22638777560264992, "obs": 0.2874251497005988, "n": 167}, {"l": "Eurobodalla", "x": 150.12818, "y": -35.840630000000004, "v": 0.23259418645191507, "obs": 0.11458333333333333, "n": 96}, {"l": "Fairfield", "x": 150.92311999999998, "y": -33.8720785, "v": 0.2063591282909934, "obs": 0.24124513618677043, "n": 514}, {"l": "Georges River", "x": 151.098733, "y": -33.966119, "v": 0.220060832114587, "obs": 0.2788104089219331, "n": 269}, {"l": "Goulburn Mulwaree", "x": 149.73301149999998, "y": -34.749164, "v": 0.1919092237283433, "obs": 0.13157894736842105, "n": 114}, {"l": "Griffith", "x": 146.04194, "y": -34.28505, "v": 0.22823075098445517, "obs": 0.22058823529411764, "n": 68}, {"l": "Hawkesbury", "x": 150.803471, "y": -33.602005, "v": 0.22019933838138728, "obs": 0.25327510917030566, "n": 229}, {"l": "Hilltops", "x": 148.3850665, "y": -34.355149, "v": 0.24508792524618472, "obs": 0.15789473684210525, "n": 76}, {"l": "Hornsby", "x": 151.099295, "y": -33.702357, "v": 0.2359559552307111, "obs": 0.28113879003558717, "n": 281}, {"l": "Inner West", "x": 151.1585255, "y": -33.8912825, "v": 0.20252972798252084, "obs": 0.15566037735849056, "n": 424}, {"l": "Kempsey", "x": 152.83980150000002, "y": -31.060113, "v": 0.26324827280579044, "obs": 0.36486486486486486, "n": 74}, {"l": "Ku-ring-gai", "x": 151.15024499999998, "y": -33.745216, "v": 0.23284091705549595, "obs": 0.25257731958762886, "n": 194}, {"l": "Lake Macquarie", "x": 151.6224775, "y": -32.9877545, "v": 0.23264406810126545, "obs": 0.28661087866108786, "n": 478}, {"l": "Lismore", "x": 153.293051, "y": -28.814492, "v": 0.2743982390529335, "obs": 0.3333333333333333, "n": 108}, {"l": "Lithgow", "x": 150.133834, "y": -33.482758, "v": 0.2648302913508863, "obs": 0.3218390804597701, "n": 87}, {"l": "Liverpool", "x": 150.891593, "y": -33.930246, "v": 0.20839989882469326, "obs": 0.23898305084745763, "n": 590}, {"l": "Maitland", "x": 151.5858915, "y": -32.748352, "v": 0.2313200447032222, "obs": 0.25625, "n": 160}, {"l": "Mid-Coast", "x": 152.446934, "y": -32.017463, "v": 0.261267389277694, "obs": 0.3447098976109215, "n": 293}, {"l": "Mid-Western Regional", "x": 149.65481, "y": -32.598651, "v": 0.26230098415053277, "obs": 0.288, "n": 125}, {"l": "Newcastle", "x": 151.7213305, "y": -32.908778, "v": 0.20098096004376986, "obs": 0.20495495495495494, "n": 444}, {"l": "North Sydney", "x": 151.211178, "y": -33.830405, "v": 0.2096010236238702, "obs": 0.25217391304347825, "n": 115}, {"l": "Northern Beaches", "x": 151.278787, "y": -33.75319, "v": 0.18105526708757164, "obs": 0.18706697459584296, "n": 433}, {"l": "Orange", "x": 149.100822, "y": -33.283128000000005, "v": 0.19871790504509154, "obs": 0.11956521739130435, "n": 92}, {"l": "Parramatta", "x": 151.021919, "y": -33.804927, "v": 0.1945987149607593, "obs": 0.18461538461538463, "n": 585}, {"l": "Penrith", "x": 150.719876, "y": -33.763053, "v": 0.21086891333274596, "obs": 0.24105011933174225, "n": 419}, {"l": "Port Macquarie-Hastings", "x": 152.819869, "y": -31.457432, "v": 0.27841181194590936, "obs": 0.3333333333333333, "n": 153}, {"l": "Port Stephens", "x": 151.855344, "y": -32.7614605, "v": 0.24372608099593107, "obs": 0.32051282051282054, "n": 156}, {"l": "Queanbeyan-Palerang Regional", "x": 149.240912, "y": -35.356324, "v": 0.07727024935403541, "obs": 0.03759398496240601, "n": 133}, {"l": "Randwick", "x": 151.23926, "y": -33.923178, "v": 0.22871349085805318, "obs": 0.21132075471698114, "n": 265}, {"l": "Richmond Valley", "x": 153.08166599999998, "y": -28.874814, "v": 0.26932174919020957, "obs": 0.3783783783783784, "n": 74}, {"l": "Ryde", "x": 151.106676, "y": -33.800959, "v": 0.20990596485549648, "obs": 0.22545454545454546, "n": 275}, {"l": "Shellharbour", "x": 150.8366995, "y": -34.568024, "v": 0.2157030497039294, "obs": 0.29838709677419356, "n": 124}, {"l": "Shoalhaven", "x": 150.599803, "y": -34.946348, "v": 0.23263475834146954, "obs": 0.29553264604810997, "n": 291}, {"l": "Singleton", "x": 151.165557, "y": -32.56879, "v": 0.27007512379106363, "obs": 0.36363636363636365, "n": 77}, {"l": "Snowy Monaro Regional", "x": 149.119622, "y": -36.361923, "v": 0.16036662998758844, "obs": 0.07692307692307693, "n": 91}, {"l": "Snowy Valleys", "x": 148.221541, "y": -35.415753, "v": 0.2524072425510684, "obs": 0.2898550724637681, "n": 69}, {"l": "Strathfield", "x": 151.070763, "y": -33.874484, "v": 0.19172073367790446, "obs": 0.21804511278195488, "n": 133}, {"l": "Sutherland", "x": 151.084892, "y": -34.0353105, "v": 0.23297974793397563, "obs": 0.3020304568527919, "n": 394}, {"l": "Sydney", "x": 151.206082, "y": -33.882402, "v": 0.2008756266052056, "obs": 0.22308892355694226, "n": 641}, {"l": "Tamworth Regional", "x": 150.918725, "y": -31.0920495, "v": 0.26275590347705907, "obs": 0.31875, "n": 160}, {"l": "The Hills", "x": 150.96510999999998, "y": -33.715973, "v": 0.20778038243033511, "obs": 0.26506024096385544, "n": 332}, {"l": "Tweed", "x": 153.526536, "y": -28.250715, "v": 0.22342322284559682, "obs": 0.16796875, "n": 256}, {"l": "Wagga Wagga", "x": 147.36119200000002, "y": -35.12652, "v": 0.2167327557284209, "obs": 0.2692307692307692, "n": 182}, {"l": "Waverley", "x": 151.264633, "y": -33.8922755, "v": 0.22688657496539863, "obs": 0.2457627118644068, "n": 118}, {"l": "Willoughby", "x": 151.189258, "y": -33.802345, "v": 0.22742276531504796, "obs": 0.22627737226277372, "n": 137}, {"l": "Wingecarribee", "x": 150.39691499999998, "y": -34.5071565, "v": 0.22594770982802057, "obs": 0.2246376811594203, "n": 138}, {"l": "Wollondilly", "x": 150.611367, "y": -34.205244, "v": 0.2841098269514169, "obs": 0.28205128205128205, "n": 117}, {"l": "Wollongong", "x": 150.882344, "y": -34.423619, "v": 0.22597859976609636, "obs": 0.2647702407002188, "n": 457}, {"l": "Woollahra", "x": 151.244607, "y": -33.879071, "v": 0.22034733997733014, "obs": 0.1415929203539823, "n": 113}, {"l": "Yass Valley", "x": 148.92552, "y": -34.837192, "v": 0.14029464468244174, "obs": 0.0784313725490196, "n": 102}], "thresh": 0.2218};</script>
 <script>
 (function(){
 "use strict";
@@ -213,6 +214,104 @@ if(S.type==="hist"){
   var xa=el("text",{x:(L+R)/2,y:H-7,"text-anchor":"middle","font-size":11.5,fill:C.asphalt});
   xa.textContent=S.xlabel||""; svg.appendChild(xa);
   legend([{label:S.lab2,color:C.maroon},{label:S.lab1,color:C.grey}],L+10,T+8);
+}
+
+/* ---- SCATTER (canvas, large N) ---- */
+if(S.type==="scatter"){
+  svg.style.display="none";
+  var cv=document.getElementById("cv"); cv.style.display="block";
+  var DPR=window.devicePixelRatio||1;
+  cv.width=W*DPR; cv.height=H*DPR; cv.style.width="100%"; cv.style.aspectRatio=W+" / "+H;
+  var ctx=cv.getContext("2d"); ctx.scale(DPR,DPR);
+  var lon=S.lon,lat=S.lat,pv=S.p,yy=S.y,li=S.li,wx=S.wx,lg=S.lga,sp=S.sp;
+  var n=lon.length, L=46,R=W-56,T=18,B=H-40;
+  var x0=Math.min.apply(null,lon),x1=Math.max.apply(null,lon);
+  var y0=Math.min.apply(null,lat),y1=Math.max.apply(null,lat);
+  function PX(v){return L+(v-x0)/(x1-x0)*(R-L);}
+  function PY(v){return B-(v-y0)/(y1-y0)*(B-T);}
+  var v0=S.vmin,v1=S.vmax;
+  function col(v){
+    var t=Math.max(0,Math.min(1,(v-v0)/(v1-v0||1)));
+    var st=[[69,117,180],[145,191,219],[255,255,191],[253,174,97],[215,48,39]];
+    var f=t*(st.length-1),i=Math.min(st.length-2,Math.floor(f)),k=f-i,a=st[i],b=st[i+1];
+    return [Math.round(a[0]+(b[0]-a[0])*k),Math.round(a[1]+(b[1]-a[1])*k),
+            Math.round(a[2]+(b[2]-a[2])*k)];
+  }
+  var vis=new Uint8Array(n);
+  function filt(){
+    var th=+document.getElementById("slider").value;
+    var fo=document.getElementById("fout").value;
+    var fl=document.getElementById("flight").value;
+    var shown=0;
+    for(var i=0;i<n;i++){
+      var ok = pv[i]>=th
+        && (fo==="a"||(+yy[i])===+fo)
+        && (fl==="a"||li[i]===+fl);
+      vis[i]=ok?1:0; if(ok)shown++;
+    }
+    document.getElementById("thv").textContent=th.toFixed(3);
+    document.getElementById("count").innerHTML="<b>"+shown.toLocaleString()+"</b> of "+
+      n.toLocaleString()+" crashes shown";
+    paint();
+  }
+  function paint(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle="#FCFBFB"; ctx.fillRect(0,0,W,H);
+    for(var i=0;i<n;i++){
+      if(!vis[i])continue;
+      var c=col(pv[i]);
+      ctx.fillStyle="rgba("+c[0]+","+c[1]+","+c[2]+",0.5)";
+      ctx.beginPath(); ctx.arc(PX(lon[i]),PY(lat[i]),1.7,0,6.2832); ctx.fill();
+    }
+    ctx.strokeStyle="#DDD7D9"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(L,B); ctx.lineTo(R,B); ctx.moveTo(L,T); ctx.lineTo(L,B); ctx.stroke();
+    ctx.fillStyle="#5A5F66"; ctx.font="10.5px Calibri,sans-serif";
+    for(var k=0;k<=4;k++){
+      var xv=x0+(x1-x0)*k/4; ctx.textAlign="center";
+      ctx.fillText(xv.toFixed(1),PX(xv),B+15);
+      var yvv=y0+(y1-y0)*k/4; ctx.textAlign="right";
+      ctx.fillText(yvv.toFixed(1),L-6,PY(yvv)+4);
+    }
+    ctx.textAlign="center"; ctx.font="11.5px Calibri,sans-serif"; ctx.fillStyle="#21252B";
+    ctx.fillText(S.xlabel||"Longitude",(L+R)/2,H-6);
+    var gx=R+16,gy=T+10,gh=B-T-40;
+    for(var q=0;q<=gh;q++){
+      var c2=col(v1-(v1-v0)*q/gh);
+      ctx.fillStyle="rgb("+c2[0]+","+c2[1]+","+c2[2]+")";
+      ctx.fillRect(gx,gy+q,13,1);
+    }
+    ctx.strokeStyle="#DDD7D9"; ctx.strokeRect(gx,gy,13,gh);
+    ctx.fillStyle="#5A5F66"; ctx.font="10px Calibri,sans-serif"; ctx.textAlign="left";
+    ctx.fillText(v1.toFixed(2),gx,gy-4);
+    ctx.fillText(v0.toFixed(2),gx,gy+gh+11);
+    ctx.save(); ctx.translate(gx+34,gy+gh/2); ctx.rotate(Math.PI/2);
+    ctx.textAlign="center"; ctx.font="10.5px Calibri,sans-serif";
+    ctx.fillText("Predicted risk",0,0); ctx.restore();
+  }
+  cv.addEventListener("mousemove",function(ev){
+    var bb=cv.getBoundingClientRect();
+    var mx=(ev.clientX-bb.left)/bb.width*W, my=(ev.clientY-bb.top)/bb.height*H;
+    var best=-1,bd=64;
+    for(var i=0;i<n;i++){
+      if(!vis[i])continue;
+      var dx=PX(lon[i])-mx, dy=PY(lat[i])-my, dd=dx*dx+dy*dy;
+      if(dd<bd){bd=dd;best=i;}
+    }
+    if(best<0){hide();return;}
+    show(ev,"<b>"+S.lgaNames[lg[best]]+"</b><br>"+S.spNames[+sp[best]]+" &middot; "+
+      S.liNames[+li[best]]+"<br>"+S.wxNames[+wx[best]]+
+      "<br>Predicted <b>"+pv[best].toFixed(3)+"</b><br>Actual: "+
+      ((+yy[best])?"fatal or serious injury (KSI)":"not KSI"));
+  });
+  cv.addEventListener("mouseleave",hide);
+  var sl=document.getElementById("slider");
+  sl.min=v0.toFixed(3); sl.max=v1.toFixed(3); sl.step=0.005; sl.value=v0.toFixed(3);
+  var fls=document.getElementById("flight");
+  S.liNames.forEach(function(nm,i){var o=document.createElement("option");o.value=i;o.textContent=nm;fls.appendChild(o);});
+  sl.addEventListener("input",filt);
+  document.getElementById("fout").addEventListener("change",filt);
+  fls.addEventListener("change",filt);
+  filt();
 }
 
 /* ---- MAP / BUBBLE ---- */

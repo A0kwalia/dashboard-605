@@ -1,0 +1,4 @@
+split,years,n,ksi_rate
+Train,2020-2022,54432,0.2128
+Validation,2023,18711,0.2479
+Test,2024,18939,0.2512

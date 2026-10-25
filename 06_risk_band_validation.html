@@ -15,13 +15,14 @@ svg{max-width:100%;height:auto;display:block;border:1px solid #EDEAEB;border-rad
 border-radius:5px;opacity:0;transition:opacity .12s;z-index:99;line-height:1.5;max-width:240px}
 </style></head><body>
 <h1>Do the risk bands mean what they say?</h1>
-<p class="sub">Mean predicted risk against the rate actually observed within each band, on the 2024 test year.</p>
+<p class="sub">Mean predicted KSI risk against the KSI rate actually observed within each band, on the 2024 test year. Bands: Low under 20.0%, Moderate from 20.0%, Elevated from 25.0%, High from 35.0%.</p>
 
 <svg id="c"></svg>
-<p class="cap">Close agreement across all four bands is what licenses showing planners a band rather than a raw probability. Note the High band holds only 1,541 of 18,939 records, so a High rating is highly selective.</p>
-<div class="src">Source: assignment1_updated.ipynb, Part B &middot; NSW Road Crash Data 2020&ndash;2024, Transport for NSW (CC BY 4.0) &middot; Calibrated histogram gradient boosting, evaluated on the held-out 2024 year &middot; Hover any element for exact values.</div>
+<canvas id="cv" style="display:none;max-width:100%;border:1px solid #EDEAEB;border-radius:6px"></canvas>
+<p class="cap">The bands rank correctly: each band's observed KSI rate is higher than the one below it. The upper bands understate risk in 2024, though: crashes rated High were KSI 58.1% of the time against a predicted 39.0%. 2024 had more KSI crashes than the 2020&ndash;2023 training years (25.1% against 22.2%), so read a band as a ranking and quote the observed rate, not the predicted one, when describing it. High holds 657 of 18,939 crashes.</p>
+<div class="src">Source: KSI model (histogram gradient boosting, sigmoid calibration), trained on 2020&ndash;2023 and evaluated on the held-out 2024 year &middot; NSW Road Crash Data 2020&ndash;2024, Transport for NSW (CC BY 4.0) &middot; Hover any element for exact values.</div>
 <div class="tip" id="tip"></div>
-<script>var SPEC={"type": "bar", "w": 640, "h": 420, "max": 1.0, "bottom": 60, "lab1": "Mean predicted", "lab2": "Observed rate", "ylabel": "Casualty rate", "items": [{"l": "Low", "l2": "n = 3,202", "v": 0.521862268609815, "v2": 0.5274828232354778, "note": "3202 records"}, {"l": "Moderate", "l2": "n = 7,691", "v": 0.659176011507173, "v2": 0.6676635027954753, "note": "7691 records"}, {"l": "Elevated", "l2": "n = 6,505", "v": 0.7324061760839448, "v2": 0.7581860107609532, "note": "6505 records"}, {"l": "High", "l2": "n = 1,541", "v": 0.8735200887515053, "v2": 0.8786502271252433, "note": "1541 records"}]};</script>
+<script>var SPEC={"type": "bar", "w": 640, "h": 420, "max": 0.69, "bottom": 60, "lab1": "Mean predicted", "lab2": "Observed KSI rate", "ylabel": "KSI rate", "items": [{"l": "Low", "l2": "n = 7,183", "v": 0.1763, "v2": 0.1772, "note": "7183 crashes in 2024"}, {"l": "Moderate", "l2": "n = 7,514", "v": 0.2209, "v2": 0.2372, "note": "7514 crashes in 2024"}, {"l": "Elevated", "l2": "n = 3,585", "v": 0.2841, "v2": 0.3682, "note": "3585 crashes in 2024"}, {"l": "High", "l2": "n = 657", "v": 0.3903, "v2": 0.5814, "note": "657 crashes in 2024"}]};</script>
 <script>
 (function(){
 "use strict";
@@ -212,6 +213,104 @@ if(S.type==="hist"){
   var xa=el("text",{x:(L+R)/2,y:H-7,"text-anchor":"middle","font-size":11.5,fill:C.asphalt});
   xa.textContent=S.xlabel||""; svg.appendChild(xa);
   legend([{label:S.lab2,color:C.maroon},{label:S.lab1,color:C.grey}],L+10,T+8);
+}
+
+/* ---- SCATTER (canvas, large N) ---- */
+if(S.type==="scatter"){
+  svg.style.display="none";
+  var cv=document.getElementById("cv"); cv.style.display="block";
+  var DPR=window.devicePixelRatio||1;
+  cv.width=W*DPR; cv.height=H*DPR; cv.style.width="100%"; cv.style.aspectRatio=W+" / "+H;
+  var ctx=cv.getContext("2d"); ctx.scale(DPR,DPR);
+  var lon=S.lon,lat=S.lat,pv=S.p,yy=S.y,li=S.li,wx=S.wx,lg=S.lga,sp=S.sp;
+  var n=lon.length, L=46,R=W-56,T=18,B=H-40;
+  var x0=Math.min.apply(null,lon),x1=Math.max.apply(null,lon);
+  var y0=Math.min.apply(null,lat),y1=Math.max.apply(null,lat);
+  function PX(v){return L+(v-x0)/(x1-x0)*(R-L);}
+  function PY(v){return B-(v-y0)/(y1-y0)*(B-T);}
+  var v0=S.vmin,v1=S.vmax;
+  function col(v){
+    var t=Math.max(0,Math.min(1,(v-v0)/(v1-v0||1)));
+    var st=[[69,117,180],[145,191,219],[255,255,191],[253,174,97],[215,48,39]];
+    var f=t*(st.length-1),i=Math.min(st.length-2,Math.floor(f)),k=f-i,a=st[i],b=st[i+1];
+    return [Math.round(a[0]+(b[0]-a[0])*k),Math.round(a[1]+(b[1]-a[1])*k),
+            Math.round(a[2]+(b[2]-a[2])*k)];
+  }
+  var vis=new Uint8Array(n);
+  function filt(){
+    var th=+document.getElementById("slider").value;
+    var fo=document.getElementById("fout").value;
+    var fl=document.getElementById("flight").value;
+    var shown=0;
+    for(var i=0;i<n;i++){
+      var ok = pv[i]>=th
+        && (fo==="a"||(+yy[i])===+fo)
+        && (fl==="a"||li[i]===+fl);
+      vis[i]=ok?1:0; if(ok)shown++;
+    }
+    document.getElementById("thv").textContent=th.toFixed(3);
+    document.getElementById("count").innerHTML="<b>"+shown.toLocaleString()+"</b> of "+
+      n.toLocaleString()+" crashes shown";
+    paint();
+  }
+  function paint(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle="#FCFBFB"; ctx.fillRect(0,0,W,H);
+    for(var i=0;i<n;i++){
+      if(!vis[i])continue;
+      var c=col(pv[i]);
+      ctx.fillStyle="rgba("+c[0]+","+c[1]+","+c[2]+",0.5)";
+      ctx.beginPath(); ctx.arc(PX(lon[i]),PY(lat[i]),1.7,0,6.2832); ctx.fill();
+    }
+    ctx.strokeStyle="#DDD7D9"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(L,B); ctx.lineTo(R,B); ctx.moveTo(L,T); ctx.lineTo(L,B); ctx.stroke();
+    ctx.fillStyle="#5A5F66"; ctx.font="10.5px Calibri,sans-serif";
+    for(var k=0;k<=4;k++){
+      var xv=x0+(x1-x0)*k/4; ctx.textAlign="center";
+      ctx.fillText(xv.toFixed(1),PX(xv),B+15);
+      var yvv=y0+(y1-y0)*k/4; ctx.textAlign="right";
+      ctx.fillText(yvv.toFixed(1),L-6,PY(yvv)+4);
+    }
+    ctx.textAlign="center"; ctx.font="11.5px Calibri,sans-serif"; ctx.fillStyle="#21252B";
+    ctx.fillText(S.xlabel||"Longitude",(L+R)/2,H-6);
+    var gx=R+16,gy=T+10,gh=B-T-40;
+    for(var q=0;q<=gh;q++){
+      var c2=col(v1-(v1-v0)*q/gh);
+      ctx.fillStyle="rgb("+c2[0]+","+c2[1]+","+c2[2]+")";
+      ctx.fillRect(gx,gy+q,13,1);
+    }
+    ctx.strokeStyle="#DDD7D9"; ctx.strokeRect(gx,gy,13,gh);
+    ctx.fillStyle="#5A5F66"; ctx.font="10px Calibri,sans-serif"; ctx.textAlign="left";
+    ctx.fillText(v1.toFixed(2),gx,gy-4);
+    ctx.fillText(v0.toFixed(2),gx,gy+gh+11);
+    ctx.save(); ctx.translate(gx+34,gy+gh/2); ctx.rotate(Math.PI/2);
+    ctx.textAlign="center"; ctx.font="10.5px Calibri,sans-serif";
+    ctx.fillText("Predicted risk",0,0); ctx.restore();
+  }
+  cv.addEventListener("mousemove",function(ev){
+    var bb=cv.getBoundingClientRect();
+    var mx=(ev.clientX-bb.left)/bb.width*W, my=(ev.clientY-bb.top)/bb.height*H;
+    var best=-1,bd=64;
+    for(var i=0;i<n;i++){
+      if(!vis[i])continue;
+      var dx=PX(lon[i])-mx, dy=PY(lat[i])-my, dd=dx*dx+dy*dy;
+      if(dd<bd){bd=dd;best=i;}
+    }
+    if(best<0){hide();return;}
+    show(ev,"<b>"+S.lgaNames[lg[best]]+"</b><br>"+S.spNames[+sp[best]]+" &middot; "+
+      S.liNames[+li[best]]+"<br>"+S.wxNames[+wx[best]]+
+      "<br>Predicted <b>"+pv[best].toFixed(3)+"</b><br>Actual: "+
+      ((+yy[best])?"fatal or serious injury (KSI)":"not KSI"));
+  });
+  cv.addEventListener("mouseleave",hide);
+  var sl=document.getElementById("slider");
+  sl.min=v0.toFixed(3); sl.max=v1.toFixed(3); sl.step=0.005; sl.value=v0.toFixed(3);
+  var fls=document.getElementById("flight");
+  S.liNames.forEach(function(nm,i){var o=document.createElement("option");o.value=i;o.textContent=nm;fls.appendChild(o);});
+  sl.addEventListener("input",filt);
+  document.getElementById("fout").addEventListener("change",filt);
+  fls.addEventListener("change",filt);
+  filt();
 }
 
 /* ---- MAP / BUBBLE ---- */

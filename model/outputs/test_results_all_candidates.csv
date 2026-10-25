@@ -1,0 +1,4 @@
+model,ROC_AUC,PR_AUC,Brier
+C1 Penalised logistic regression,0.6275,0.3745,0.1801
+C2 Random forest,0.6259,0.3802,0.1807
+C3 HistGradientBoosting,0.6296,0.3823,0.1797

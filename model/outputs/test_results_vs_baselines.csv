@@ -1,0 +1,7 @@
+method,ROC_AUC,PR_AUC,Brier,ROC_AUC_gain_vs_B2
+B0 Prior rate,0.5,0.2512,0.189,-0.0697
+B1 Historical LGA KSI rate,0.5723,0.3016,0.1866,0.0026
+B2 LGA x speed x lighting cell rate,0.5697,0.3135,0.1865,0.0
+B3 Speed-limit rule (>=80 km/h),0.5379,0.2685,0.1879,-0.0318
+C3 HistGradientBoosting (uncalibrated),0.6296,0.3823,0.1797,0.0599
+C3 HistGradientBoosting + sigmoid calibration,0.6299,0.3845,0.1813,0.0602
